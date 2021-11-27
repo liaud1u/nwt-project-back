@@ -28,15 +28,17 @@ export class UsersService {
       ),
     );
 
-  findOneByPseudo = (pseudo: string): Observable<UserEntity> =>
+  findOneByUsername = (username: string): Observable<UserEntity> =>
     from(this._users).pipe(
-      find((_: User) => _.pseudo === pseudo),
+      find((_: User) => _.username === username),
       mergeMap((_: User) =>
         !!_
           ? of(new UserEntity(_))
           : throwError(
               () =>
-                new NotFoundException(`User with pseudo '${pseudo}' not found`),
+                new NotFoundException(
+                  `User with username '${username}' not found`,
+                ),
             ),
       ),
     );

@@ -3,7 +3,7 @@ import { IsNotEmpty } from 'class-validator';
 export class HandlerBody {
   //@IsMongoId()
   @IsNotEmpty()
-  pseudo: string;
+  username: string;
   @IsNotEmpty()
   password: string;
 }

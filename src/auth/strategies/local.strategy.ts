@@ -11,9 +11,9 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     super();
   }
 
-  async validate(pseudo: string, password: string): Promise<any> {
+  async validate(username: string, password: string): Promise<any> {
     return this.authService
-      .validateUser(pseudo, password)
+      .validateUser(username, password)
       .pipe(
         mergeMap((_: UserEntity) =>
           !!_ ? of(_) : throwError(() => new UnauthorizedException()),

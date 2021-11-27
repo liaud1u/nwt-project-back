@@ -9,13 +9,13 @@ import {
 
 export class CreatePersonDto {
   @ApiProperty({
-    name: 'pseudo',
-    description: 'Unique pseudo',
+    name: 'username',
+    description: 'Unique username',
     example: 'VictorDu34',
   })
   @IsString()
   @IsNotEmpty()
-  pseudo: string;
+  username: string;
 
   @ApiProperty({
     name: 'firstname',

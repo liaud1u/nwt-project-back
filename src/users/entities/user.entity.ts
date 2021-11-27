@@ -22,13 +22,13 @@ export class UserEntity {
   password: string;
 
   @ApiProperty({
-    name: 'pseudo',
-    description: 'Unique pseudo of the user',
+    name: 'username',
+    description: 'Unique username of the user',
     example: 'Jean Cristhobaldo',
   })
   @Expose()
   @Type(() => String)
-  pseudo: string;
+  username: string;
 
   @ApiProperty({
     name: 'firstname',

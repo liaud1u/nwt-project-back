@@ -2,7 +2,7 @@ export const USERS = [
   {
     id: 'aaaa',
     password: 'password',
-    pseudo: 'bonjourJeSuisNicolas',
+    username: 'bonjourJeSuisNicolas',
     photo: 'https://randomuser.me/portraits/women/59.jpg',
     firstname: 'Nicolas',
     lastname: 'Sarkozy',
@@ -13,7 +13,7 @@ export const USERS = [
   {
     id: 'aled',
     password: 'password2',
-    pseudo: 'JeanCristhobaldo',
+    username: 'JeanCristhobaldo',
     photo: 'https://randomuser.me/portraits/women/58.jpg',
     firstname: 'Jean',
     lastname: 'Cristhobaldo',
