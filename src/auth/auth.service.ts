@@ -5,6 +5,7 @@ import { UserEntity } from '../users/entities/user.entity';
 import { map } from 'rxjs/operators';
 import { JwtService } from '@nestjs/jwt';
 import { HandlerBody } from './validators/handler-body';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -17,7 +18,9 @@ export class AuthService {
     return this.usersService
       .findOneByUsername(username)
       .pipe(
-        map((_: UserEntity) => (!!_ && _.password === pass ? _ : undefined)),
+        map((_: UserEntity) =>
+          !!_ && bcrypt.compareSync(pass, _.password) ? _ : undefined,
+        ),
       );
   }
 

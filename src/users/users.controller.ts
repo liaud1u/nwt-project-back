@@ -7,6 +7,7 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -17,6 +18,7 @@ import { UserEntity } from './entities/user.entity';
 import { HandlerParams } from './validators/handler-params';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('users')
 @Controller('users')
@@ -39,6 +41,7 @@ export class UsersController {
     return this._usersService.create(createUserDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   update(
     @Param() params: HandlerParams,
@@ -47,6 +50,7 @@ export class UsersController {
     return this._usersService.update(params.id, updatePersonDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   delete(@Param() params: HandlerParams): Observable<void> {
     return this._usersService.delete(params.id);
