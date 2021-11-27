@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { UserEntity } from '../users/entities/user.entity';
 import { map } from 'rxjs/operators';
 import { JwtService } from '@nestjs/jwt';
-import { HandlerRequests } from './validators/handle.request';
+import { HandlerBody } from './validators/handler-body';
 
 @Injectable()
 export class AuthService {
@@ -21,8 +21,8 @@ export class AuthService {
       );
   }
 
-  async login(user: HandlerRequests) {
-    const payload = { pseudo: user.username, sub: user.password };
+  async login(user: HandlerBody) {
+    const payload = { pseudo: user.pseudo };
     return {
       access_token: this.jwtService.sign(payload),
     };

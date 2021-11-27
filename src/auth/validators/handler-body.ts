@@ -1,6 +1,7 @@
 import { IsNotEmpty } from 'class-validator';
 
-export class ConnexionParams {
+export class HandlerBody {
+  //@IsMongoId()
   @IsNotEmpty()
   pseudo: string;
   @IsNotEmpty()
