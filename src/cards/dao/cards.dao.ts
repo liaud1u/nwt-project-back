@@ -1,9 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Card, CardDocument } from '../schemas/card.shema';
 import { defaultIfEmpty, from, Observable } from 'rxjs';
-import { filter, map, tap } from 'rxjs/operators';
+import { filter, map } from 'rxjs/operators';
 
 @Injectable()
 export class CardsDao {
@@ -26,7 +26,6 @@ export class CardsDao {
     from(this._cardModel.find({})).pipe(
       filter((docs: CardDocument[]) => !!docs && docs.length > 0),
       map((docs: CardDocument[]) => docs.map((_: CardDocument) => _.toJSON())),
-      tap((_) => Logger.log(_)),
       defaultIfEmpty(undefined),
     );
 
@@ -41,6 +40,20 @@ export class CardsDao {
     from(this._cardModel.findById(id)).pipe(
       filter((doc: CardDocument) => !!doc),
       map((doc: CardDocument) => doc.toJSON()),
+      defaultIfEmpty(undefined),
+    );
+
+  /**
+   * Returns the cards of the list matching level  in parameter
+   *
+   * @param {string} level of the card in the db
+   *
+   * @return {Observable<Card[] | void>}
+   */
+  findByLevel = (level: number): Observable<Card[] | void> =>
+    from(this._cardModel.find({ level: level })).pipe(
+      filter((docs: CardDocument[]) => !!docs && docs.length > 0),
+      map((docs: CardDocument[]) => docs.map((_: CardDocument) => _.toJSON())),
       defaultIfEmpty(undefined),
     );
 }

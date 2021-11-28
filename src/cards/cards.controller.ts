@@ -2,6 +2,7 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  Logger,
   Param,
   UseInterceptors,
 } from '@nestjs/common';
@@ -19,6 +20,7 @@ import { CardsService } from './cards.service';
 import { Observable } from 'rxjs';
 import { CardEntity } from './entities/card.entity';
 import { HandlerParams } from '../users/validators/handler-params';
+import { LevelParams } from './validators/level-params';
 
 @ApiTags('cards')
 @Controller('cards')
@@ -50,7 +52,7 @@ export class CardsController {
   /**
    * Handler to answer to GET /cards/:id route
    *
-   * @param {HandlerParams} params list of route params to take user id
+   * @param {HandlerParams} params list of route params to take card id
    *
    * @returns Observable<CardEntity>
    */
@@ -74,5 +76,37 @@ export class CardsController {
   @Get(':id')
   findById(@Param() params: HandlerParams): Observable<CardEntity | void> {
     return this._cardsService.findById(params.id);
+  }
+
+  /**
+   * Handler to answer to GET /cards/level/:id route
+   *
+   * @param {HandlerParams} params list of route params to take card id
+   *
+   * @returns Observable<CardEntity[]>
+   */
+  @ApiOkResponse({
+    description: 'Returns the card for the given level',
+    type: CardEntity,
+    isArray: true,
+  })
+  @ApiNotFoundResponse({
+    description: "Card with the given level doesn't exist in the database",
+  })
+  @ApiBadRequestResponse({ description: 'Parameter provided is not good' })
+  @ApiUnprocessableEntityResponse({
+    description: "The request can't be performed in the database",
+  })
+  @ApiNoContentResponse({ description: 'No card found in database' })
+  @ApiParam({
+    name: 'level',
+    description: 'Level of the cards you want',
+    type: Number,
+    allowEmptyValue: false,
+  })
+  @Get('level/:level')
+  findByLevel(@Param() params: LevelParams): Observable<CardEntity[] | void> {
+    Logger.log(params);
+    return this._cardsService.findByLevel(params.level);
   }
 }

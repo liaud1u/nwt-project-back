@@ -45,4 +45,28 @@ export class CardsService {
             ),
       ),
     );
+
+  /**
+   * Returns cards of the list matching level in parameter
+   *
+   * @param {string} level of the card in the db
+   *
+   * @return {Observable<Card | void>}
+   */
+  findByLevel = (level: number): Observable<CardEntity[] | void> =>
+    this._cardsDao.findByLevel(level).pipe(
+      catchError((e) =>
+        throwError(() => new UnprocessableEntityException(e.message)),
+      ),
+      filter((_: Card[]) => !!_),
+      mergeMap((_: Card[]) =>
+        !!_ && _.length > 0
+          ? _.map((__: Card) => new CardEntity(__))
+          : throwError(
+              () =>
+                new NotFoundException(`Cards with level '${level}' not found`),
+            ),
+      ),
+      defaultIfEmpty(undefined),
+    );
 }

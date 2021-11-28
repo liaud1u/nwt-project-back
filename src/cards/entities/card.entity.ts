@@ -17,7 +17,7 @@ export class CardEntity {
     description: 'Name of the card in the database',
     example: 'Gare de Nancy',
   })
-  @Exclude()
+  @Expose()
   @Type(() => String)
   name: string;
 
