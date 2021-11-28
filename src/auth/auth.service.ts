@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
-import { Observable } from 'rxjs';
+import { mergeMap, Observable, of } from 'rxjs';
 import { UserEntity } from '../users/entities/user.entity';
 import { map } from 'rxjs/operators';
 import { JwtService } from '@nestjs/jwt';
@@ -24,10 +24,22 @@ export class AuthService {
       );
   }
 
-  async login(user: HandlerBody) {
+  login(user: HandlerBody): Observable<any> {
     const payload = { username: user.username };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+    return this.usersService
+      .findOneByUsername(user.username)
+      .pipe(
+        mergeMap((_: UserEntity) =>
+          this.addToken(_, this.jwtService.sign(payload)),
+        ),
+      );
+  }
+
+  private addToken(user: UserEntity, token: string): Observable<any> {
+    return of({
+      ...user,
+      access_token: token,
+      password: undefined, // We remove the password
+    });
   }
 }

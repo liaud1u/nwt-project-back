@@ -3,6 +3,7 @@ import { LocalAuthGuard } from './auth/guards/local-auth.guard';
 import { AuthService } from './auth/auth.service';
 import { HandlerBody } from './auth/validators/handler-body';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { Observable } from 'rxjs';
 
 @Controller()
 export class AppController {
@@ -10,7 +11,7 @@ export class AppController {
 
   @UseGuards(LocalAuthGuard)
   @Post('auth/login')
-  async login(@Body() req: HandlerBody) {
+  login(@Body() req: HandlerBody): Observable<any> {
     return this.authService.login(req);
   }
 
