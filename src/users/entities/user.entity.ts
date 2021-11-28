@@ -69,7 +69,7 @@ export class UserEntity {
   @ApiProperty({
     name: 'birthDate',
     description: 'Birthdate in timestamp format',
-    example: '101343600000',
+    example: '2000-12-31',
   })
   @Expose()
   @Type(() => Number)

@@ -8,6 +8,8 @@ import { AppConfig, SwaggerConfig } from './app.types';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as Config from 'config';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 async function bootstrap(config: AppConfig, swaggerConfig: SwaggerConfig) {
   // create NestJS application
@@ -36,12 +38,12 @@ async function bootstrap(config: AppConfig, swaggerConfig: SwaggerConfig) {
     .build();
 
   // create swagger document
-  // const peopleDocument = SwaggerModule.createDocument(app, options, {
-  //  include: [PeopleModule],
-  // });
+  const peopleDocument = SwaggerModule.createDocument(app, options, {
+    include: [UsersModule, AuthModule],
+  });
 
   // setup swagger module
-  // SwaggerModule.setup(swaggerConfig.path, app, peopleDocument);
+  SwaggerModule.setup(swaggerConfig.path, app, peopleDocument);
 
   // launch server
   await app.listen(config.port, config.host);

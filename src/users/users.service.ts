@@ -17,6 +17,13 @@ import { User } from './schemas/user.schema';
 export class UsersService {
   constructor(private readonly _usersDao: UsersDao) {}
 
+  /**
+   * Returns one user of the list matching id in parameter
+   *
+   * @param {string} id of the user
+   *
+   * @returns {Observable<UserEntity>}
+   */
   findOne = (id: string): Observable<UserEntity | void> =>
     this._usersDao.findById(id).pipe(
       catchError((e) =>
@@ -31,6 +38,13 @@ export class UsersService {
       ),
     );
 
+  /**
+   * Returns one user of the list matching username in parameter
+   *
+   * @param {string} username of the user
+   *
+   * @returns {Observable<UserEntity>}
+   */
   findOneByUsername = (username: string): Observable<UserEntity> =>
     this._usersDao.findByUsername(username).pipe(
       catchError((e) =>
@@ -48,6 +62,13 @@ export class UsersService {
       ),
     );
 
+  /**
+   * Check if user already exists and add it in users list
+   *
+   * @param user to create
+   *
+   * @returns {Observable<UserEntity>}
+   */
   create = (user: CreateUserDto): Observable<UserEntity> =>
     this._addUser(user).pipe(
       mergeMap((_: CreateUserDto) => this._usersDao.save(_)),
@@ -64,7 +85,15 @@ export class UsersService {
       map((_: User) => new UserEntity(_)),
     );
 
-  update = (id: string, user: UpdateUserDto) =>
+  /**
+   * Update a user in users list
+   *
+   * @param {string} id of the user to update
+   * @param user data to update
+   *
+   * @returns {Observable<UserEntity>}
+   */
+  update = (id: string, user: UpdateUserDto): Observable<UserEntity> =>
     this._modifyUser(id, user).pipe(
       catchError((e) =>
         e.code === 11000
@@ -85,6 +114,13 @@ export class UsersService {
       ),
     );
 
+  /**
+   * Deletes one user in users list
+   *
+   * @param {string} id of the user to delete
+   *
+   * @returns {Observable<void>}
+   */
   delete = (id: string): Observable<void> =>
     this._usersDao.findByIdAndRemove(id).pipe(
       catchError((e) =>
@@ -132,6 +168,15 @@ export class UsersService {
       }),
     );
 
+  /**
+   * Hash the password of the user
+   *
+   * @param user with password to hash
+   *
+   * @returns {Observable<UpdateUserDto>}
+   *
+   * @private
+   */
   private updatePassword = (user: UpdateUserDto): Observable<UpdateUserDto> =>
     from(
       bcrypt.hash(user.password, 10).then((value) => {
@@ -153,6 +198,16 @@ export class UsersService {
     return new Date(date).getTime();
   };
 
+  /**
+   * Adapt user's info and send it to the database
+   *
+   * @param id of the user
+   * @param user we are modifying
+   *
+   * @returns {Observable<User | void>}
+   *
+   * @private
+   */
   private _modifyUser(
     id: string,
     user: UpdateUserDto,

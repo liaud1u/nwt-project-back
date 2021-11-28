@@ -11,7 +11,18 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     super();
   }
 
-  async validate(username: string, password: string): Promise<any> {
+  /**
+   * Validate the user and the password to login
+   *
+   * @param username of the user
+   * @param password of the user
+   *
+   * @returns Promise<UserEntity | void>
+   */
+  async validate(
+    username: string,
+    password: string,
+  ): Promise<UserEntity | void> {
     return this.authService
       .validateUser(username, password)
       .pipe(
