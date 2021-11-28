@@ -44,6 +44,22 @@ export class UsersController {
   constructor(private readonly _usersService: UsersService) {}
 
   /**
+   * Handler to answer to GET /users route
+   *
+   * @returns Observable<UserEntity[] | void>
+   */
+  @ApiOkResponse({
+    description: 'Returns an array of user',
+    type: UserEntity,
+    isArray: true,
+  })
+  @ApiNoContentResponse({ description: 'No user exists in database' })
+  @Get()
+  findAll(): Observable<UserEntity[] | void> {
+    return this._usersService.findAll();
+  }
+
+  /**
    * Handler to answer to GET /users/:id route
    *
    * @param {HandlerParams} params list of route params to take user id

@@ -4,9 +4,16 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { catchError, from, Observable, of, throwError } from 'rxjs';
+import {
+  catchError,
+  defaultIfEmpty,
+  from,
+  Observable,
+  of,
+  throwError,
+} from 'rxjs';
 import { UserEntity } from './entities/user.entity';
-import { map, mergeMap } from 'rxjs/operators';
+import { filter, map, mergeMap } from 'rxjs/operators';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -16,6 +23,18 @@ import { User } from './schemas/user.schema';
 @Injectable()
 export class UsersService {
   constructor(private readonly _usersDao: UsersDao) {}
+
+  /**
+   * Returns all existing users in the list
+   *
+   * @returns {Observable<UserEntity[] | void>}
+   */
+  findAll = (): Observable<UserEntity[] | void> =>
+    this._usersDao.find().pipe(
+      filter((_: User[]) => !!_),
+      map((_: User[]) => _.map((__: User) => new UserEntity(__))),
+      defaultIfEmpty(undefined),
+    );
 
   /**
    * Returns one user of the list matching id in parameter
