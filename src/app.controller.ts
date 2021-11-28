@@ -1,4 +1,12 @@
-import { Controller, Post, UseGuards, Body, Get, Logger } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  UseGuards,
+  Body,
+  Get,
+  Logger,
+  UseInterceptors,
+} from '@nestjs/common';
 import { LocalAuthGuard } from './auth/guards/local-auth.guard';
 import { AuthService } from './auth/auth.service';
 import { HandlerBody } from './auth/validators/handler-body';
@@ -8,10 +16,14 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiParam,
+  ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { HttpInterceptor } from './interceptors/http.interceptor';
 
+@ApiTags('auth')
 @Controller()
+@UseInterceptors(HttpInterceptor)
 export class AppController {
   constructor(private authService: AuthService) {}
 

@@ -23,3 +23,22 @@ db.getCollection('users').insertMany([
 
 // display the final initial data
 db.getCollection('users').find({});
+
+// Insert people array
+db.getCollection('cards').insertMany([
+  {
+    name: "Place Stanislas",
+    description: "Plus belle place du monde qui se trouve à Nancy",
+    level: 5,
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Fontaine_de_Neptune_sur_la_Place_Stanislas.jpg/1920px-Fontaine_de_Neptune_sur_la_Place_Stanislas.jpg",
+  },
+  {
+    name: "Fac de Science",
+    description: "Université de Lorraine",
+    level: 2,
+    image: "https://www.crafters.fr/images/boutique/UL/Logo-boutiqueUL.png",
+  },
+]);
+
+// display the final initial data
+db.getCollection('cards').find({});
