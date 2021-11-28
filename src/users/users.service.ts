@@ -2,30 +2,26 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
-import { find, findIndex, from, Observable, of, throwError } from 'rxjs';
+import { catchError, from, Observable, of, throwError } from 'rxjs';
 import { UserEntity } from './entities/user.entity';
-import { map, mergeMap, tap } from 'rxjs/operators';
-import { User } from './users.types';
-import { USERS } from '../data/users';
+import { map, mergeMap } from 'rxjs/operators';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UsersDao } from './dao/users.dao';
+import { User } from './schemas/user.schema';
 
 @Injectable()
 export class UsersService {
-  private _users: User[];
+  constructor(private readonly _usersDao: UsersDao) {}
 
-  constructor() {
-    this._users = [].concat(USERS).map((user) => ({
-      ...user,
-      birthDate: this._parseDate(user.birthDate),
-    }));
-  }
-
-  findOne = (id: string): Observable<UserEntity> =>
-    from(this._users).pipe(
-      find((_: User) => _.id === id),
+  findOne = (id: string): Observable<UserEntity | void> =>
+    this._usersDao.findById(id).pipe(
+      catchError((e) =>
+        throwError(() => new UnprocessableEntityException(e.message)),
+      ),
       mergeMap((_: User) =>
         !!_
           ? of(new UserEntity(_))
@@ -36,8 +32,10 @@ export class UsersService {
     );
 
   findOneByUsername = (username: string): Observable<UserEntity> =>
-    from(this._users).pipe(
-      find((_: User) => _.username === username),
+    this._usersDao.findByUsername(username).pipe(
+      catchError((e) =>
+        throwError(() => new UnprocessableEntityException(e.message)),
+      ),
       mergeMap((_: User) =>
         !!_
           ? of(new UserEntity(_))
@@ -50,42 +48,83 @@ export class UsersService {
       ),
     );
 
-  private _parseDate = (date: string): number => {
-    const dates = date.split('/');
-    return new Date(dates[2] + '/' + dates[1] + '/' + dates[0]).getTime();
-  };
-
   create = (user: CreateUserDto): Observable<UserEntity> =>
-    from(this._users).pipe(
-      find(
-        (_: User) =>
-          _.username.toLowerCase() === user.username.toLowerCase() ||
-          _.email.toLowerCase() === user.email.toLowerCase(),
-      ),
-      mergeMap((_: User) =>
-        !!_
+    this._addUser(user).pipe(
+      mergeMap((_: CreateUserDto) => this._usersDao.save(_)),
+      catchError((e) =>
+        e.code === 11000
           ? throwError(
               () =>
                 new ConflictException(
-                  `Someone with username '${user.username}' or email '${user.email}' already exists`,
+                  `User with username '${user.username}' or email '${user.email}' already exists`,
                 ),
             )
-          : this._addUser(user),
+          : throwError(() => new UnprocessableEntityException(e.message)),
       ),
-    );
-
-  private _addUser = (user: CreateUserDto): Observable<UserEntity> =>
-    of({
-      ...user,
-      id: this._createId(),
-      birthDate: this._parseDate(user.birthDate),
-    }).pipe(
-      mergeMap((_: User) => this.hashPassword(_)),
-      tap((_: User) => (this._users = this._users.concat(_))),
       map((_: User) => new UserEntity(_)),
     );
 
-  private hashPassword = (user: User): Observable<User> =>
+  update = (id: string, user: UpdateUserDto) =>
+    this._modifyUser(id, user).pipe(
+      catchError((e) =>
+        e.code === 11000
+          ? throwError(
+              () =>
+                new ConflictException(
+                  `User with username '${user.username}' or email '${user.email}' already exists`,
+                ),
+            )
+          : throwError(() => new UnprocessableEntityException(e.message)),
+      ),
+      mergeMap((_: User) =>
+        !!_
+          ? of(new UserEntity(_))
+          : throwError(
+              () => new NotFoundException(`People with id '${id}' not found`),
+            ),
+      ),
+    );
+
+  delete = (id: string): Observable<void> =>
+    this._usersDao.findByIdAndRemove(id).pipe(
+      catchError((e) =>
+        throwError(() => new UnprocessableEntityException(e.message)),
+      ),
+      mergeMap((_: User) =>
+        !!_
+          ? of(undefined)
+          : throwError(
+              () => new NotFoundException(`User with id '${id}' not found`),
+            ),
+      ),
+    );
+
+  /**
+   * Add user with good data in users list
+   *
+   * @param user to add
+   *
+   * @returns {Observable<CreateUserDto>}
+   *
+   * @private
+   */
+  private _addUser = (user: CreateUserDto): Observable<CreateUserDto> =>
+    of({
+      ...user,
+      birthDate: this._parseDate(user.birthDate),
+      // photo: 'https://randomuser.me/api/portraits/lego/6.jpg',
+    }).pipe(mergeMap((_: CreateUserDto) => this.hashPassword(_)));
+
+  /**
+   * Hash the password of the new user
+   *
+   * @param user with password to hash
+   *
+   * @returns {Observable<CreateUserDto>}
+   *
+   * @private
+   */
+  private hashPassword = (user: CreateUserDto): Observable<CreateUserDto> =>
     from(
       bcrypt.hash(user.password, 10).then((value) => {
         user.password = value;
@@ -93,45 +132,33 @@ export class UsersService {
       }),
     );
 
-  private _createId = (): string => `${new Date().getTime()}`;
-
-  update = (id: string, user: UpdateUserDto) =>
-    from(this._users).pipe(
-      find(
-        (_: User) =>
-          _.lastname.toLowerCase() === user.lastname.toLowerCase() &&
-          _.firstname.toLowerCase() === user.firstname.toLowerCase() &&
-          _.id.toLowerCase() !== id.toLowerCase(),
-      ),
-      mergeMap((_: User) =>
-        !!_
-          ? throwError(
-              () =>
-                new ConflictException(
-                  `Someone with username '${user.username}' or email '${user.email}' already exists`,
-                ),
-            )
-          : this._findPeopleIndexOfList(id),
-      ),
-      tap((index: number) => Object.assign(this._users[index], user)),
-      map((index: number) => new UserEntity(this._users[index])),
+  private updatePassword = (user: UpdateUserDto): Observable<UpdateUserDto> =>
+    from(
+      bcrypt.hash(user.password, 10).then((value) => {
+        user.password = value;
+        return user;
+      }),
     );
 
-  delete = (id: string): Observable<void> =>
-    this._findPeopleIndexOfList(id).pipe(
-      tap((_: number) => this._users.splice(_, 1)),
-      map(() => undefined),
-    );
+  /**
+   * Function to parse date and return timestamp
+   *
+   * @param {string} date to parse
+   *
+   * @returns {number} timestamp
+   *
+   * @private
+   */
+  private _parseDate = (date: string): number => {
+    return new Date(date).getTime();
+  };
 
-  private _findPeopleIndexOfList = (id: string): Observable<number> =>
-    from(this._users).pipe(
-      findIndex((_: User) => _.id === id),
-      mergeMap((index: number) =>
-        index > -1
-          ? of(index)
-          : throwError(
-              () => new NotFoundException(`User with id '${id}' not found`),
-            ),
-      ),
+  private _modifyUser(
+    id: string,
+    user: UpdateUserDto,
+  ): Observable<User | void> {
+    return this.updatePassword(user).pipe(
+      mergeMap((_: UpdateUserDto) => this._usersDao.findByIdAndUpdate(id, _)),
     );
+  }
 }

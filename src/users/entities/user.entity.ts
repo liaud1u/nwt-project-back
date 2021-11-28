@@ -73,7 +73,7 @@ export class UserEntity {
   })
   @Expose()
   @Type(() => Number)
-  birthDate: number;
+  birthDate: any;
 
   /**
    * Class constructor

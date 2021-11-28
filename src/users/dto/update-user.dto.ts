@@ -1,8 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  IsDateString,
   IsEmail,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
 } from 'class-validator';
@@ -55,11 +55,11 @@ export class UpdateUserDto {
   @ApiProperty({
     name: 'birthDate',
     description: 'Birthdate with an universal format',
-    example: '2000/12/31',
+    example: '2000-12-31',
   })
   @IsNotEmpty()
-  @IsString()
-  birthDate: string;
+  @IsDateString()
+  birthDate: any;
 
   @ApiPropertyOptional({
     name: 'photo',

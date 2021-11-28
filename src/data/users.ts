@@ -8,7 +8,6 @@ export const USERS = [
     lastname: 'Sarkozy',
     birthDate: '02/01/1974',
     email: 'Nicolas.Sarkozy@ARGENT.com',
-    phone: '0784112248',
   },
   {
     id: 'aled',
@@ -19,6 +18,5 @@ export const USERS = [
     lastname: 'Cristhobaldo',
     birthDate: '02/01/1999',
     email: 'Jean.Cristho@gmail.com',
-    phone: '078410606',
   },
 ];

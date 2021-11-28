@@ -32,7 +32,7 @@ export class UsersController {
   constructor(private readonly _usersService: UsersService) {}
 
   @Get(':id')
-  findOne(@Param() params: HandlerParams): Observable<UserEntity> {
+  findOne(@Param() params: HandlerParams): Observable<UserEntity | void> {
     return this._usersService.findOne(params.id);
   }
 
@@ -45,9 +45,9 @@ export class UsersController {
   @Put(':id')
   update(
     @Param() params: HandlerParams,
-    @Body() updatePersonDto: UpdateUserDto,
+    @Body() updateUserDto: UpdateUserDto,
   ): Observable<UserEntity> {
-    return this._usersService.update(params.id, updatePersonDto);
+    return this._usersService.update(params.id, updateUserDto);
   }
 
   @UseGuards(JwtAuthGuard)
