@@ -50,6 +50,7 @@ export class UpdateUserDto {
   })
   @IsString()
   @IsNotEmpty()
+  @IsOptional()
   password: string;
 
   @ApiProperty({

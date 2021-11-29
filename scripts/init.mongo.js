@@ -42,3 +42,20 @@ db.getCollection('cards').insertMany([
 
 // display the final initial data
 db.getCollection('cards').find({});
+
+// Insert people array
+db.getCollection('collections').insertMany([
+  {
+    amount: 1,
+    idUser: "61a386bb334ac0413ea10011",
+    idCard: "61a3c03e334ac0413ea10013"
+  },
+  {
+    amount: 2,
+    idUser: "61a386bb334ac0413ea10011",
+    idCard: "61a3c03e334ac0413ea10014"
+  },
+]);
+
+// display the final initial data
+db.getCollection('collections').find({});

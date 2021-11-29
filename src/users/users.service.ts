@@ -112,8 +112,8 @@ export class UsersService {
    *
    * @returns {Observable<UserEntity>}
    */
-  update = (id: string, user: UpdateUserDto): Observable<UserEntity> =>
-    this._modifyUser(id, user).pipe(
+  update(id: string, user: UpdateUserDto): Observable<UserEntity> {
+    return this._modifyUser(id, user).pipe(
       catchError((e) =>
         e.code === 11000
           ? throwError(
@@ -132,6 +132,7 @@ export class UsersService {
             ),
       ),
     );
+  }
 
   /**
    * Deletes one user in users list
