@@ -18,7 +18,7 @@ export class CollectionsDao {
   ) {}
 
   /**
-   * Call mongoose method, call toJSON on each result and returns UserModel[] or undefined
+   * Call mongoose method, call toJSON on each result and returns CollectionModel[] or undefined
    *
    * @return {Observable<Collection[] | void>}
    */
@@ -42,6 +42,20 @@ export class CollectionsDao {
     from(this._collectionModel.findById(id)).pipe(
       filter((doc: CollectionDocument) => !!doc),
       map((doc: CollectionDocument) => doc.toJSON()),
+      defaultIfEmpty(undefined),
+    );
+
+  /**
+   * Call mongoose method, call toJSON on each result and returns CollectionModel[] or undefined
+   *
+   * @return {Observable<Collection[] | void>}
+   */
+  findByUserId = (id: string): Observable<Collection[] | void> =>
+    from(this._collectionModel.find({ idUser: id })).pipe(
+      filter((docs: CollectionDocument[]) => !!docs && docs.length > 0),
+      map((docs: CollectionDocument[]) =>
+        docs.map((_: CollectionDocument) => _.toJSON()),
+      ),
       defaultIfEmpty(undefined),
     );
 }
