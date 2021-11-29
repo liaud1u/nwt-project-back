@@ -5,8 +5,8 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
-  Put,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -116,7 +116,7 @@ export class UsersController {
   }
 
   /**
-   * Handler to answer to PUT /people/:id route
+   * Handler to answer to PUT /users/:id route
    *
    * @param {HandlerParams} params list of route params to take user id
    * @param updateUserDto data to update
@@ -151,12 +151,12 @@ export class UsersController {
   })
   @ApiBody({ description: 'Payload to update a person', type: UpdateUserDto })
   @UseGuards(JwtAuthGuard)
-  @Put(':id')
+  @Patch(':id')
   update(
     @Param() params: HandlerParams,
     @Body() updateUserDto: UpdateUserDto,
   ): Observable<UserEntity> {
-    return this._usersService.update(params.id, updateUserDto);
+    return this._usersService.patch(params.id, updateUserDto);
   }
 
   /**

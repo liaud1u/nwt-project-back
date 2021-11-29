@@ -112,8 +112,14 @@ export class UsersService {
    *
    * @returns {Observable<UserEntity>}
    */
-  update(id: string, user: UpdateUserDto): Observable<UserEntity> {
-    return this._modifyUser(id, user).pipe(
+  patch(id: string, user: UpdateUserDto): Observable<UserEntity> {
+    return of(user).pipe(
+      filter((_: UpdateUserDto) => !!_),
+      mergeMap((_: UpdateUserDto) =>
+        _.password
+          ? this._modifyUser(id, user)
+          : this._usersDao.findByIdAndUpdate(id, _),
+      ),
       catchError((e) =>
         e.code === 11000
           ? throwError(

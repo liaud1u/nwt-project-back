@@ -15,7 +15,8 @@ export class UpdateUserDto {
   })
   @IsString()
   @IsNotEmpty()
-  username: string;
+  @IsOptional()
+  username?: string;
 
   @ApiProperty({
     name: 'firstname',
@@ -24,7 +25,8 @@ export class UpdateUserDto {
   })
   @IsString()
   @IsNotEmpty()
-  firstname: string;
+  @IsOptional()
+  firstname?: string;
 
   @ApiProperty({
     name: 'lastname',
@@ -33,7 +35,8 @@ export class UpdateUserDto {
   })
   @IsString()
   @IsNotEmpty()
-  lastname: string;
+  @IsOptional()
+  lastname?: string;
 
   @ApiProperty({
     name: 'email',
@@ -41,7 +44,8 @@ export class UpdateUserDto {
     example: 'Jean.Cristho@mail.com',
   })
   @IsEmail()
-  email: string;
+  @IsOptional()
+  email?: string;
 
   @ApiProperty({
     name: 'password',
@@ -51,7 +55,8 @@ export class UpdateUserDto {
   @IsString()
   @IsNotEmpty()
   @IsOptional()
-  password: string;
+  @IsOptional()
+  password?: string;
 
   @ApiProperty({
     name: 'birthDate',
@@ -60,7 +65,8 @@ export class UpdateUserDto {
   })
   @IsNotEmpty()
   @IsDateString()
-  birthDate: any;
+  @IsOptional()
+  birthDate?: any;
 
   @ApiPropertyOptional({
     name: 'photo',

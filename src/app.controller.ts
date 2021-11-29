@@ -13,9 +13,9 @@ import { HandlerBody } from './auth/validators/handler-body';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { Observable, of } from 'rxjs';
 import {
+  ApiBody,
   ApiNotFoundResponse,
   ApiOkResponse,
-  ApiParam,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -46,11 +46,9 @@ export class AppController {
     description:
       "The password doesn't match the one in the database or the parameters are wrong",
   })
-  @ApiParam({
-    name: 'id',
-    description: 'Unique identifier of the user in the database',
-    type: String,
-    allowEmptyValue: false,
+  @ApiBody({
+    description: 'Payload to login (username and password)',
+    type: HandlerBody,
   })
   @UseGuards(LocalAuthGuard)
   @Post('auth/login')

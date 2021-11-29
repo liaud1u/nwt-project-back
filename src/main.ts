@@ -9,7 +9,6 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as Config from 'config';
 import { UsersModule } from './users/users.module';
-import { AuthModule } from './auth/auth.module';
 import { CardsModule } from './cards/cards.module';
 import { CollectionsModule } from './collections/collections.module';
 
@@ -41,7 +40,7 @@ async function bootstrap(config: AppConfig, swaggerConfig: SwaggerConfig) {
 
   // create swagger document
   const peopleDocument = SwaggerModule.createDocument(app, options, {
-    include: [UsersModule, AuthModule, CardsModule, CollectionsModule],
+    include: [UsersModule, AppModule, CardsModule, CollectionsModule],
   });
 
   // setup swagger module
