@@ -109,4 +109,34 @@ export class CardsController {
     Logger.log(params);
     return this._cardsService.findByLevel(params.level);
   }
+
+  /**
+   * Handler to answer to PUT /cards/user/:id/roll route
+   *
+   * @param {HandlerParams} params list of route params to take card id
+   *
+   * @returns Observable<CardEntity[]>
+   */
+  @ApiOkResponse({
+    description: 'Returns the list of cards gained by the users',
+    type: CardEntity,
+    isArray: true,
+  })
+  @ApiNotFoundResponse({
+    description: "The users with the given id wasn't found in the database",
+  })
+  @ApiBadRequestResponse({ description: 'Parameter provided is not good' })
+  @ApiUnprocessableEntityResponse({
+    description: "The request can't be performed in the database",
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'yes',
+    type: String,
+    allowEmptyValue: false,
+  })
+  @Get('/cards/user/:id/roll')
+  roll(@Param() params: HandlerParams): Observable<CardEntity[] | void> {
+    return this._cardsService.roll(params.id);
+  }
 }

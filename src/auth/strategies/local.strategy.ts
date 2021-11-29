@@ -3,7 +3,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { AuthService } from '../auth.service';
 import { UserEntity } from '../../users/entities/user.entity';
-import { mergeMap, of, throwError } from 'rxjs';
+import { lastValueFrom, mergeMap, of, throwError } from 'rxjs';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -23,13 +23,14 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     username: string,
     password: string,
   ): Promise<UserEntity | void> {
-    return this.authService
-      .validateUser(username, password)
-      .pipe(
-        mergeMap((_: UserEntity) =>
-          !!_ ? of(_) : throwError(() => new UnauthorizedException()),
+    return lastValueFrom(
+      this.authService
+        .validateUser(username, password)
+        .pipe(
+          mergeMap((_: UserEntity) =>
+            !!_ ? of(_) : throwError(() => new UnauthorizedException()),
+          ),
         ),
-      )
-      .toPromise();
+    );
   }
 }

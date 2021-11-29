@@ -3,7 +3,15 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-import { catchError, defaultIfEmpty, Observable, of, throwError } from 'rxjs';
+import {
+  catchError,
+  combineLatest,
+  defaultIfEmpty,
+  Observable,
+  of,
+  switchMap,
+  throwError,
+} from 'rxjs';
 import { filter, map, mergeMap } from 'rxjs/operators';
 import { CardEntity } from './entities/card.entity';
 import { Card } from './schemas/card.shema';
@@ -59,7 +67,7 @@ export class CardsService {
         throwError(() => new UnprocessableEntityException(e.message)),
       ),
       filter((_: Card[]) => !!_),
-      mergeMap((_: Card[]) =>
+      map((_: Card[]) =>
         !!_ && _.length > 0
           ? _.map((__: Card) => new CardEntity(__))
           : throwError(
@@ -69,4 +77,31 @@ export class CardsService {
       ),
       defaultIfEmpty(undefined),
     );
+
+  randomNumbers = (num: number): Observable<number[]> => {
+    return of(Array.from({ length: num }, () => Math.floor(Math.random() * 6)));
+  };
+
+  randomWithLevel = (level: number): Observable<CardEntity> => {
+    return this.findByLevel(level).pipe(
+      filter((_: CardEntity[]) => !!_),
+      map((_: CardEntity[]) => {
+        return _[Math.trunc(Math.random() * _.length)];
+      }),
+    );
+  };
+
+  roll(id: string): Observable<CardEntity[]> {
+    const randomNumbers = Array.from(
+      { length: 10 },
+      () => Math.floor(Math.random() * 5) + 1,
+    );
+
+    const cards = [] as Observable<CardEntity>[];
+
+    randomNumbers.forEach((value) => {
+      cards.push(this.randomWithLevel(value));
+    });
+    return of(cards).pipe(switchMap((_) => combineLatest(_)));
+  }
 }
