@@ -10,3 +10,7 @@ db.getCollection('users').createIndex(
   { email: 1 },
   { unique: true }
 );
+db.getCollection('collections').createIndex(
+  { idUser: 1, idCard: 1 },
+  { unique: true }
+);

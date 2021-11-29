@@ -4,6 +4,11 @@ import { Model } from 'mongoose';
 import { defaultIfEmpty, from, Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { Collection, CollectionDocument } from '../schemas/collection.shema';
+import { CreateUserDto } from '../../users/dto/create-user.dto';
+import { User, UserDocument } from '../../users/schemas/user.schema';
+import { CreateCollectionDto } from '../dto/create-collection.dto';
+import { UpdateUserDto } from '../../users/dto/update-user.dto';
+import { UpdateCollectionDto } from '../dto/update-collection.dto';
 
 @Injectable()
 export class CollectionsDao {
@@ -56,6 +61,55 @@ export class CollectionsDao {
       map((docs: CollectionDocument[]) =>
         docs.map((_: CollectionDocument) => _.toJSON()),
       ),
+      defaultIfEmpty(undefined),
+    );
+
+  /**
+   * Check if collection already exists with index and add it in collection list
+   *
+   * @param {CreateCollectionDto} collection to create
+   *
+   * @return {Observable<Collection>}
+   */
+  create = (collectionDto: CreateCollectionDto): Observable<Collection> =>
+    from(new this._collectionModel(collectionDto).save()).pipe(
+      map((doc: CollectionDocument) => doc.toJSON()),
+    );
+
+  /**
+   * Update a collection in collections list
+   *
+   * @param {string} id
+   * @param {UpdateCollectionDto} collection
+   *
+   * @return {Observable<Collection | void>}
+   */
+  update = (
+    id: string,
+    collectionDto: UpdateCollectionDto,
+  ): Observable<Collection | void> =>
+    from(
+      this._collectionModel.findByIdAndUpdate(id, collectionDto, {
+        new: true,
+        runValidators: true,
+      }),
+    ).pipe(
+      filter((doc: CollectionDocument) => !!doc),
+      map((doc: CollectionDocument) => doc.toJSON()),
+      defaultIfEmpty(undefined),
+    );
+
+  /**
+   * Delete a user in collection list
+   *
+   * @param {string} id
+   *
+   * @return {Observable<Collection | void>}
+   */
+  findByIdAndRemove = (id: string): Observable<Collection | void> =>
+    from(this._collectionModel.findByIdAndRemove(id)).pipe(
+      filter((doc: CollectionDocument) => !!doc),
+      map((doc: CollectionDocument) => doc.toJSON()),
       defaultIfEmpty(undefined),
     );
 }

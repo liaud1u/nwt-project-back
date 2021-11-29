@@ -9,7 +9,7 @@ swagger:
   title: New Web's Technologies course with NestJS
   description: The Card API description
   version: 1.0
-  tag: card
+  tag: cards
   path: documentation
 mongodb:
   uri: mongodb://0.0.0.0:27017/nwt

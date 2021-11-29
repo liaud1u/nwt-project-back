@@ -19,7 +19,7 @@ export class CollectionEntity {
   })
   @Expose()
   @Type(() => Number)
-  amount: string;
+  amount: number;
 
   @ApiProperty({
     name: 'idUser',

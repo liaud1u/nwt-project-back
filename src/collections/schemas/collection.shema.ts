@@ -26,7 +26,7 @@ export class Collection {
     required: true,
     trim: true,
   })
-  amount: string;
+  amount: number;
 
   @Prop({
     type: String,
