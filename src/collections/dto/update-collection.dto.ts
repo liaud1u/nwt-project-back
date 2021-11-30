@@ -38,4 +38,13 @@ export class UpdateCollectionDto {
   @IsNumber()
   @IsNotEmpty()
   amount: number;
+
+  @ApiProperty({
+    name: 'waiting',
+    description: 'amount of this card wich is currently waiting for a trade',
+    example: 0,
+  })
+  @IsNumber()
+  @IsNotEmpty()
+  waiting: number;
 }

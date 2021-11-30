@@ -22,6 +22,16 @@ export class CollectionEntity {
   amount: number;
 
   @ApiProperty({
+    name: 'waiting',
+    description:
+      'Amount of card of this collection waiting currently in a trading state',
+    example: 8,
+  })
+  @Expose()
+  @Type(() => Number)
+  waiting: number;
+
+  @ApiProperty({
     name: 'idUser',
     description: 'Id of the owner of the collection',
     example: '61a386bb334ac0413a10011',

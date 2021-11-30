@@ -48,12 +48,14 @@ db.getCollection('collections').insertMany([
   {
     amount: 1,
     idUser: "61a386bb334ac0413ea10011",
-    idCard: "61a3c03e334ac0413ea10013"
+    idCard: "61a3c03e334ac0413ea10013",
+    waiting: 0
   },
   {
     amount: 2,
     idUser: "61a386bb334ac0413ea10011",
-    idCard: "61a3c03e334ac0413ea10014"
+    idCard: "61a3c03e334ac0413ea10014",
+    waiting: 0
   },
 ]);
 

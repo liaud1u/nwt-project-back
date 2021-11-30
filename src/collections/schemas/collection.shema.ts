@@ -29,6 +29,13 @@ export class Collection {
   amount: number;
 
   @Prop({
+    type: Number,
+    required: true,
+    trim: true,
+  })
+  waiting: number;
+
+  @Prop({
     type: String,
     required: true,
     trim: true,
