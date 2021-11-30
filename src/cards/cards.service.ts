@@ -88,33 +88,55 @@ export class CardsService {
       defaultIfEmpty(undefined),
     );
 
+  /**
+   * Generate random numbers in array between 1 and 5
+   *
+   * @param num number of generated number
+   *
+   * @return Observable<number[]>
+   */
   randomNumbers = (num: number): Observable<number[]> => {
     return of(
       Array.from({ length: num }, () => Math.floor(Math.random() * 5) + 1),
     );
   };
 
+  /**
+   * Generate random cards with associated level
+   *
+   * @param level the level of the card
+   *
+   * @return Observable<CardEntity>
+   */
   randomWithLevel = (level: number): Observable<CardEntity> => {
     return this.findByLevel(level).pipe(
       filter((_: CardEntity[]) => !!_),
-      map((_: CardEntity[]) => {
-        return _[Math.trunc(Math.random() * _.length)];
-      }),
+      map((_: CardEntity[]) => _[Math.trunc(Math.random() * _.length)]),
     );
   };
 
+  /**
+   * Generate 10 randomCards
+   */
   generate10RandomCards = (): Observable<CardEntity[]> =>
     this.randomNumbers(10).pipe(
       map((_: number[]) => _.map((__: number) => this.randomWithLevel(__))),
       switchMap((_) => combineLatest(_)),
     );
 
-  roll(id: string): Observable<CollectionEntity[]> {
-    return this._usersService.findOne(id).pipe(
+  /**
+   * Do a roll of cards for the user
+   *
+   * @param userId of the user that doing the roll
+   *
+   * @return Observable<CollectionEntity[]>
+   */
+  roll(userId: string): Observable<CollectionEntity[]> {
+    return this._usersService.findOne(userId).pipe(
       filter((_: UserEntity) => !!_),
       mergeMap((_: UserEntity) =>
         !!_ &&
-        (!_.lastRollDate ||
+        (!_.lastRollDate || // If the date is not present then we do the roll
           (_.lastRollDate && Date.now().valueOf() - _.lastRollDate > 86400000))
           ? of(_)
           : throwError(() => new ImATeapotException()),
@@ -132,6 +154,14 @@ export class CardsService {
     );
   }
 
+  /**
+   * Add the list of cards to the user Account (with collections)
+   *
+   * @param userId of the user
+   * @param cards you want to add
+   *
+   * @return Observable<CollectionEntity[]>
+   */
   addCardToUser = (
     userId: string,
     cards: CardEntity[],
