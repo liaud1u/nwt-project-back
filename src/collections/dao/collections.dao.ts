@@ -56,7 +56,7 @@ export class CollectionsDao {
    * @return {Observable<Collection[] | void>}
    */
   findByUserId = (id: string): Observable<Collection[] | void> =>
-    from(this._collectionModel.find()).pipe(
+    from(this._collectionModel.find({ idUser: id })).pipe(
       filter((docs: CollectionDocument[]) => !!docs && docs.length > 0),
       map((docs: CollectionDocument[]) =>
         docs.map((_: CollectionDocument) => _.toJSON()),
@@ -80,6 +80,40 @@ export class CollectionsDao {
         docs.map((_: CollectionDocument) => _.toJSON()),
       ),
       defaultIfEmpty(undefined),
+    );
+
+  /**
+   * Call mongoose method, call toJSON on each result and returns CollectionModel or undefined
+   *
+   * @return {Observable<Collection[] | void>}
+   */
+  findByUserIdAndCardIdArray = (
+    idCard: string,
+    idUser: string,
+  ): Observable<Collection[] | void> =>
+    from(
+      this._collectionModel.find({
+        $and: [{ idCard: idCard }, { idUser: idUser }],
+      }),
+    ).pipe(
+      filter((docs: CollectionDocument[]) => !!docs && docs.length > 0),
+      map((docs: CollectionDocument[]) =>
+        docs.map((_: CollectionDocument) => _.toJSON()),
+      ),
+      defaultIfEmpty(undefined),
+    );
+
+  findByUserIdAndCardId = (
+    userId: string,
+    cardId: string,
+  ): Observable<Collection> =>
+    from(this._collectionModel.find({ idCard: cardId, idUser: userId })).pipe(
+      map((doc: CollectionDocument[]) =>
+        !!doc && !!doc.length && doc.length === 1 ? doc[0] : null,
+      ),
+      filter((doc: CollectionDocument) => !!doc),
+      map((doc: CollectionDocument) => doc.toJSON()),
+      defaultIfEmpty(null),
     );
 
   /**

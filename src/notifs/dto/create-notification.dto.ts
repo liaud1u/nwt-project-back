@@ -56,7 +56,6 @@ export class CreateNotificationDto {
   })
   @IsString()
   @IsNotEmpty()
-  @IsMongoId()
   content: string;
 
   @ApiProperty({

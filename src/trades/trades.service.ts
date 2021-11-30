@@ -15,10 +15,16 @@ import { CreateTradeDto } from './dto/create-trade.dto';
 import { UpdateUserDto } from '../users/dto/update-user.dto';
 import { PatchTradeDto } from './dto/patch-trade.dto';
 import { Trade } from './schemas/trade.shema';
+import { Collection } from '../collections/schemas/collection.shema';
+import { CollectionsDao } from '../collections/dao/collections.dao';
+import { CollectionsService } from '../collections/collections.service';
 
 @Injectable()
 export class TradesService {
-  constructor(private readonly _tradeDao: TradesDao) {}
+  constructor(
+    private readonly _tradeDao: TradesDao,
+    private _collectionService: CollectionsService,
+  ) {}
 
   /**
    * Returns all existing trades in the list
@@ -109,15 +115,31 @@ export class TradesService {
    *
    * @returns {Observable<TradeEntity>}
    */
-  create = (tradeDto: CreateTradeDto): Observable<TradeEntity> =>
-    this._tradeDao.create(tradeDto).pipe(
-      catchError((e) =>
-        e.code === 11000
-          ? throwError(() => new ConflictException(`Id trade already exists`))
-          : throwError(() => new UnprocessableEntityException(e.message)),
-      ),
-      map((_: Trade) => new TradeEntity(_)),
+  create(tradeDto: CreateTradeDto): Observable<TradeEntity> {
+    console.log('Update waiting amount ');
+
+    this._collectionService.addCardWaitingToUser(
+      tradeDto.idUserWaiting,
+      tradeDto.idCard,
     );
+    this._collectionService.addCardWaitingToUser(
+      tradeDto.idUser,
+      tradeDto.idCardWanted,
+    );
+
+    return this._tradeDao
+      .create(tradeDto)
+
+      .pipe(
+        catchError((e) =>
+          e.code === 11000
+            ? throwError(() => new ConflictException(`Id trade already exists`))
+            : throwError(() => new UnprocessableEntityException(e.message)),
+        ),
+
+        map((_: Trade) => new TradeEntity(_)),
+      );
+  }
 
   /**
    * Update a trade in trades list
@@ -164,4 +186,36 @@ export class TradesService {
             ),
       ),
     );
+
+  accept(id: string) {
+    this.findById(id).subscribe((data: TradeEntity) => {
+      this._collectionService.removeCardWaitingToUser(
+        data.idUser,
+        data.idCardWanted,
+      );
+      this._collectionService.removeCardWaitingToUser(
+        data.idUserWaiting,
+        data.idCard,
+      );
+      this._collectionService.addCardToUser(data.idUser, data.idCard);
+      this._collectionService.addCardToUser(
+        data.idUserWaiting,
+        data.idCardWanted,
+      );
+    });
+  }
+
+  decline(id: string) {
+    this.findById(id).subscribe((dataTrade: TradeEntity) => {
+      this._collectionService
+        .removeCardWaitingToUser(dataTrade.idUser, dataTrade.idCardWanted)
+        .subscribe((data) => {
+          this._collectionService
+            .removeCardWaitingToUser(dataTrade.idUserWaiting, dataTrade.idCard)
+            .subscribe((data) => {
+              this.delete(id).subscribe();
+            });
+        });
+    });
+  }
 }

@@ -5,3 +5,13 @@ export class HandlerParams {
   @IsNotEmpty()
   id: string;
 }
+
+export class DoubleHandlerParams {
+  @IsMongoId()
+  @IsNotEmpty()
+  idCard: string;
+
+  @IsMongoId()
+  @IsNotEmpty()
+  idUser: string;
+}

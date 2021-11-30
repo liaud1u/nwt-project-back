@@ -29,7 +29,10 @@ import { CollectionEntity } from './entities/collection.entity';
 import { CollectionsService } from './collections.service';
 import { HttpInterceptor } from '../interceptors/http.interceptor';
 import { UserEntity } from '../users/entities/user.entity';
-import { HandlerParams } from '../users/validators/handler-params';
+import {
+  DoubleHandlerParams,
+  HandlerParams,
+} from '../users/validators/handler-params';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { CreateCollectionDto } from './dto/create-collection.dto';
 import { UpdateUserDto } from '../users/dto/update-user.dto';
@@ -120,6 +123,47 @@ export class CollectionsController {
     @Param() params: HandlerParams,
   ): Observable<CollectionEntity[] | void> {
     return this._collectionService.findAllTradableById(params.id);
+  }
+
+  /**
+   * Handler to answer to GET /collections/:idUser/:idCard route
+   *
+   * @param {DoubleHandlerParams} params list of route params to take user id
+   *
+   * @returns Observable<CollectionEntity>
+   */
+  @ApiOkResponse({
+    description: 'Returns the collection for the given "ids"',
+    type: CollectionEntity,
+  })
+  @ApiNotFoundResponse({
+    description:
+      'Collection with the given "ids" doesn\'t exist in the database',
+  })
+  @ApiBadRequestResponse({ description: 'Parameter provided is not good' })
+  @ApiUnprocessableEntityResponse({
+    description: "The request can't be performed in the database",
+  })
+  @ApiParam({
+    name: 'idCard',
+    description: 'Unique identifier of the user in the database',
+    type: String,
+    allowEmptyValue: false,
+  })
+  @ApiParam({
+    name: 'idUser',
+    description: 'Unique identifier of the card in the database',
+    type: String,
+    allowEmptyValue: false,
+  })
+  @Get(':idUser/:idCard')
+  findOneByIdUserIdCard(
+    @Param() params: DoubleHandlerParams,
+  ): Observable<CollectionEntity[] | void> {
+    return this._collectionService.findOneByIdUserIdCard(
+      params.idCard,
+      params.idUser,
+    );
   }
 
   /**

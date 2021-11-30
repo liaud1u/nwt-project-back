@@ -176,7 +176,7 @@ export class CollectionsService {
    *
    * @param {string} id of the user in the db
    *
-   * @return {Observable<Collection[] | void>}
+   * @return {Observable<CollectionEntity[] | void>}
    */
   findAllTradableById = (id: string): Observable<CollectionEntity[] | void> =>
     this._collectionDao.findTradableByUserId(id).pipe(
@@ -186,4 +186,171 @@ export class CollectionsService {
       ),
       defaultIfEmpty(undefined),
     );
+
+  /**
+   * Returns a collection matching user and card id in parameter
+   *
+   * @param {string} idUser of the user in the db
+   * @param {string} idCard of the card in the db
+   *
+   * @return {Observable<CollectionEntity[] | void>}
+   */
+  findOneByIdUserIdCard = (
+    idUser: string,
+    idCard: string,
+  ): Observable<CollectionEntity[] | void> =>
+    this._collectionDao.findByUserIdAndCardIdArray(idUser, idCard).pipe(
+      filter((_: Collection[]) => !!_),
+      map((_: Collection[]) =>
+        _.map((__: Collection) => new CollectionEntity(__)),
+      ),
+      defaultIfEmpty(undefined),
+    );
+
+  private increaseAmount = (
+    collection: Collection,
+  ): Observable<CollectionEntity> =>
+    of(collection).pipe(
+      mergeMap((_: Collection) => this.copyDtoAndIncreaseAmount(_)),
+      mergeMap((_: UpdateCollectionDto) => this.update(collection._id, _)),
+    );
+
+  private decreaseAmount = (
+    collection: Collection,
+  ): Observable<CollectionEntity> =>
+    of(collection).pipe(
+      mergeMap((_: Collection) => this.copyDtoAndDecreaseAmount(_)),
+      mergeMap((_: UpdateCollectionDto) => this.update(collection._id, _)),
+    );
+
+  private increaseWaiting = (
+    collection: Collection,
+  ): Observable<CollectionEntity> =>
+    of(collection).pipe(
+      mergeMap((_: Collection) => this.copyDtoAndIncreaseWaiting(_)),
+      mergeMap((_: UpdateCollectionDto) => this.update(collection._id, _)),
+    );
+
+  private decreaseWaiting = (
+    collection: Collection,
+  ): Observable<CollectionEntity> =>
+    of(collection).pipe(
+      mergeMap((_: Collection) => this.copyDtoAndDecreaseWaiting(_)),
+      mergeMap((_: UpdateCollectionDto) => this.update(collection._id, _)),
+    );
+
+  private copyDtoAndIncreaseAmount = (
+    collection: Collection,
+  ): Observable<UpdateCollectionDto> =>
+    of({
+      idUser: collection.idUser,
+      idCard: collection.idCard,
+      amount: collection.amount + 1,
+      waiting: collection.waiting,
+    });
+
+  private copyDtoAndDecreaseAmount = (
+    collection: Collection,
+  ): Observable<UpdateCollectionDto> =>
+    of({
+      idUser: collection.idUser,
+      idCard: collection.idCard,
+      amount: collection.amount - 1,
+      waiting: collection.waiting,
+    });
+
+  private copyDtoAndIncreaseWaiting = (
+    collection: Collection,
+  ): Observable<UpdateCollectionDto> =>
+    of({
+      idUser: collection.idUser,
+      idCard: collection.idCard,
+      amount: collection.amount,
+      waiting: collection.waiting + 1,
+    });
+
+  private copyDtoAndDecreaseWaiting = (
+    collection: Collection,
+  ): Observable<UpdateCollectionDto> =>
+    of({
+      idUser: collection.idUser,
+      idCard: collection.idCard,
+      amount: collection.amount,
+      waiting: collection.waiting - 1,
+    });
+
+  private createDto = (
+    idUser: string,
+    idCard: string,
+  ): Observable<CreateCollectionDto> =>
+    of({
+      idUser: idUser,
+      idCard: idCard,
+      amount: 1,
+      waiting: 0,
+    });
+
+  addCardToUser = (
+    idUser: string,
+    idCard: string,
+  ): Observable<CollectionEntity> =>
+    this._collectionDao
+      .findByUserIdAndCardId(idUser, idCard)
+      .pipe(
+        mergeMap((_: Collection) =>
+          !!_
+            ? this.increaseAmount(_)
+            : this.createDto(idUser, idCard).pipe(
+                mergeMap((__: CreateCollectionDto) => this.create(__)),
+              ),
+        ),
+      );
+
+  removeCardToUser = (
+    idUser: string,
+    idCard: string,
+  ): Observable<CollectionEntity> =>
+    this._collectionDao
+      .findByUserIdAndCardId(idUser, idCard)
+      .pipe(
+        mergeMap((_: Collection) =>
+          !!_
+            ? this.decreaseAmount(_)
+            : this.createDto(idUser, idCard).pipe(
+                mergeMap((__: CreateCollectionDto) => this.create(__)),
+              ),
+        ),
+      );
+
+  addCardWaitingToUser = (
+    idUser: string,
+    idCard: string,
+  ): Observable<CollectionEntity> =>
+    this._collectionDao
+      .findByUserIdAndCardId(idUser, idCard)
+      .pipe(
+        mergeMap((_: Collection) =>
+          !!_
+            ? this.increaseWaiting(_)
+            : this.createDto(idUser, idCard).pipe(
+                mergeMap((__: CreateCollectionDto) => this.create(__)),
+              ),
+        ),
+      );
+
+  removeCardWaitingToUser = (
+    idUser: string,
+    idCard: string,
+  ): Observable<CollectionEntity> =>
+    this._collectionDao
+      .findByUserIdAndCardId(idUser, idCard)
+      .pipe(
+        mergeMap((_: Collection) =>
+          !!_
+            ? this.decreaseWaiting(_)
+            : this.createDto(idUser, idCard).pipe(
+                mergeMap((__: CreateCollectionDto) => this.create(__)),
+              ),
+        ),
+      );
 }

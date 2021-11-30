@@ -265,4 +265,70 @@ export class TradesController {
   delete(@Param() params: HandlerParams): Observable<void> {
     return this._tradeModel.delete(params.id);
   }
+
+  /**
+   * Handler to answer to accept a trade /trades/accept/:id route
+   *
+   * @param {HandlerParams} params list of route params to take trade id
+   *
+   * @returns Observable<void>
+   */
+  @ApiNoContentResponse({
+    description: 'The trade has been successfully accepted',
+  })
+  @ApiNotFoundResponse({
+    description: 'Trade with the given "id" doesn\'t exist in the database',
+  })
+  @ApiBadRequestResponse({ description: 'Parameter provided is not good' })
+  @ApiUnprocessableEntityResponse({
+    description: "The request can't be performed in the database",
+  })
+  @ApiUnauthorizedResponse({
+    description:
+      'An access token of the user is required to perform this action',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Unique identifier of the trade in the database',
+    type: String,
+    allowEmptyValue: false,
+  })
+  @UseGuards(JwtAuthGuard)
+  @Post('/accept/:id')
+  accept(@Param() params: HandlerParams): Observable<void> {
+    return of(this._tradeModel.accept(params.id));
+  }
+
+  /**
+   * Handler to answer to decline a trade /trades/accept/:id route
+   *
+   * @param {HandlerParams} params list of route params to take trade id
+   *
+   * @returns Observable<void>
+   */
+  @ApiNoContentResponse({
+    description: 'The trade has been successfully accepted',
+  })
+  @ApiNotFoundResponse({
+    description: 'Trade with the given "id" doesn\'t exist in the database',
+  })
+  @ApiBadRequestResponse({ description: 'Parameter provided is not good' })
+  @ApiUnprocessableEntityResponse({
+    description: "The request can't be performed in the database",
+  })
+  @ApiUnauthorizedResponse({
+    description:
+      'An access token of the user is required to perform this action',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Unique identifier of the trade in the database',
+    type: String,
+    allowEmptyValue: false,
+  })
+  @UseGuards(JwtAuthGuard)
+  @Post('/decline/:id')
+  decline(@Param() params: HandlerParams): Observable<void> {
+    return of(this._tradeModel.decline(params.id));
+  }
 }
