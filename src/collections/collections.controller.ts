@@ -93,6 +93,36 @@ export class CollectionsController {
   }
 
   /**
+   * Handler to answer to GET /collections/user/tradable/:id route
+   *
+   * @returns Observable<TradeEntity[] | void>
+   */
+  @ApiOkResponse({
+    description:
+      'Returns the array of Collection with tradable card for the given "id"',
+    type: CollectionEntity,
+  })
+  @ApiNotFoundResponse({
+    description: 'No Collections for the specified user ID',
+  })
+  @ApiBadRequestResponse({ description: 'Parameter provided is not good' })
+  @ApiUnprocessableEntityResponse({
+    description: "The request can't be performed in the database",
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Unique identifier of the user in the database',
+    type: String,
+    allowEmptyValue: false,
+  })
+  @Get('/users/tradable/:id')
+  findAllTradableById(
+    @Param() params: HandlerParams,
+  ): Observable<CollectionEntity[] | void> {
+    return this._collectionService.findAllTradableById(params.id);
+  }
+
+  /**
    * Handler to answer to GET /collections/:id route
    *
    * @param {HandlerParams} params list of route params to take user id

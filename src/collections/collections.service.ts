@@ -170,4 +170,20 @@ export class CollectionsService {
             ),
       ),
     );
+
+  /**
+   * Returns array of collection of tradable card for user matching id in parameter
+   *
+   * @param {string} id of the user in the db
+   *
+   * @return {Observable<Collection[] | void>}
+   */
+  findAllTradableById = (id: string): Observable<CollectionEntity[] | void> =>
+    this._collectionDao.findTradableByUserId(id).pipe(
+      filter((_: Collection[]) => !!_),
+      map((_: Collection[]) =>
+        _.map((__: Collection) => new CollectionEntity(__)),
+      ),
+      defaultIfEmpty(undefined),
+    );
 }

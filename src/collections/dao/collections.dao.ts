@@ -56,7 +56,25 @@ export class CollectionsDao {
    * @return {Observable<Collection[] | void>}
    */
   findByUserId = (id: string): Observable<Collection[] | void> =>
-    from(this._collectionModel.find({ idUser: id })).pipe(
+    from(this._collectionModel.find()).pipe(
+      filter((docs: CollectionDocument[]) => !!docs && docs.length > 0),
+      map((docs: CollectionDocument[]) =>
+        docs.map((_: CollectionDocument) => _.toJSON()),
+      ),
+      defaultIfEmpty(undefined),
+    );
+
+  /**
+   * Call mongoose method, call toJSON on each result and returns CollectionModel[] or undefined
+   *
+   * @return {Observable<Collection[] | void>}
+   */
+  findTradableByUserId = (id: string): Observable<Collection[] | void> =>
+    from(
+      this._collectionModel.find({
+        $and: [{ $expr: { $gt: ['$amount', '$waiting'] } }, { idUser: id }],
+      }),
+    ).pipe(
       filter((docs: CollectionDocument[]) => !!docs && docs.length > 0),
       map((docs: CollectionDocument[]) =>
         docs.map((_: CollectionDocument) => _.toJSON()),
