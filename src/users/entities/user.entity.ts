@@ -10,7 +10,7 @@ export class UserEntity {
   })
   @Expose()
   @Type(() => String)
-  id: string;
+  _id: string;
 
   @ApiProperty({
     name: 'password',
@@ -72,8 +72,17 @@ export class UserEntity {
     example: '2000-12-31',
   })
   @Expose()
-  @Type(() => Number)
+  @Type(() => Date)
   birthDate: any;
+
+  @ApiProperty({
+    name: 'lastRollDate',
+    description: '',
+    example: '2000-12-31',
+  })
+  @Expose()
+  @Type(() => Date)
+  lastRollDate: any;
 
   /**
    * Class constructor

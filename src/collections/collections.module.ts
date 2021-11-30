@@ -1,7 +1,7 @@
 import { Logger, Module } from '@nestjs/common';
 import { CollectionsController } from './collections.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Collection, CollectionSchema } from './schemas/collection.shema';
+import { Collection, CollectionSchema } from './schemas/collection.schema';
 import { CollectionsService } from './collections.service';
 import { CollectionsDao } from './dao/collections.dao';
 

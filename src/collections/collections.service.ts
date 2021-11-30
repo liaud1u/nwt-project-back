@@ -8,7 +8,7 @@ import { catchError, defaultIfEmpty, Observable, of, throwError } from 'rxjs';
 import { filter, map, mergeMap } from 'rxjs/operators';
 import { CollectionsDao } from './dao/collections.dao';
 import { CollectionEntity } from './entities/collection.entity';
-import { Collection } from './schemas/collection.shema';
+import { Collection } from './schemas/collection.schema';
 import { CreateCollectionDto } from './dto/create-collection.dto';
 import { UpdateCollectionDto } from './dto/update-collection.dto';
 
@@ -92,7 +92,7 @@ export class CollectionsService {
   /**
    * Check if collection already exists and add it in collection list
    *
-   * @param collection to create
+   * @param collectionDto to create
    *
    * @returns {Observable<CollectionEntity>}
    */
@@ -115,7 +115,7 @@ export class CollectionsService {
    * Update a collection in collections list
    *
    * @param {string} id of the collection to update
-   * @param collection data to update
+   * @param collectionDto data to update
    *
    * @returns {Observable<CollectionEntity>}
    */

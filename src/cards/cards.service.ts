@@ -12,7 +12,7 @@ import {
   switchMap,
   throwError,
 } from 'rxjs';
-import { filter, map, mergeMap, tap } from 'rxjs/operators';
+import { filter, map, mergeMap } from 'rxjs/operators';
 import { CardEntity } from './entities/card.entity';
 import { Card } from './schemas/card.shema';
 import { CardsDao } from './dao/cards.dao';
@@ -20,6 +20,7 @@ import { UsersService } from '../users/users.service';
 import { UserEntity } from '../users/entities/user.entity';
 import { CollectionsService } from '../collections/collections.service';
 import { CollectionEntity } from '../collections/entities/collection.entity';
+import { User } from '../users/schemas/user.schema';
 
 @Injectable()
 export class CardsService {
@@ -111,10 +112,13 @@ export class CardsService {
     return this._usersService.findOne(id).pipe(
       filter((_: UserEntity) => !!_),
       mergeMap((_: UserEntity) =>
+        this._usersService.changeRollDate(_, Date.now()),
+      ),
+      filter((_: User) => !!_),
+      mergeMap((_: User) =>
         this.generate10RandomCards().pipe(
-          mergeMap((__) => this.addCardToUser(_.id, __)), // ERREUR ICI POURQUOI ? JE NE SAIS PAS
+          mergeMap((__) => this.addCardToUser(_._id, __)),
           defaultIfEmpty([] as CollectionEntity[]),
-          tap((_) => console.log(_)),
         ),
       ),
     );
@@ -125,14 +129,11 @@ export class CardsService {
     cards: CardEntity[],
   ): Observable<CollectionEntity[]> =>
     of(cards).pipe(
-      tap((_) => console.log('start addCart to User')),
-      map((__: CardEntity[]) => {
-        console.log(__);
-        console.log(__.length);
-        return __.map((___: CardEntity) =>
+      map((__: CardEntity[]) =>
+        __.map((___: CardEntity) =>
           this._collecionService.addCardToUser(userId, ___.id),
-        );
-      }),
+        ),
+      ),
       switchMap((_) => combineLatest(_)),
     );
 }
