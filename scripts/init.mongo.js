@@ -38,6 +38,42 @@ db.getCollection('cards').insertMany([
     level: 2,
     image: "https://www.crafters.fr/images/boutique/UL/Logo-boutiqueUL.png",
   },
+  {
+    name: "Place Stanislas",
+    description: "Plus belle place du monde qui se trouve à Nancy",
+    level: 1,
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Fontaine_de_Neptune_sur_la_Place_Stanislas.jpg/1920px-Fontaine_de_Neptune_sur_la_Place_Stanislas.jpg",
+  },
+  {
+    name: "Fac de Science",
+    description: "Université de Lorraine",
+    level: 3,
+    image: "https://www.crafters.fr/images/boutique/UL/Logo-boutiqueUL.png",
+  },
+  {
+    name: "Place Stanislas",
+    description: "Plus belle place du monde qui se trouve à Nancy",
+    level: 4,
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Fontaine_de_Neptune_sur_la_Place_Stanislas.jpg/1920px-Fontaine_de_Neptune_sur_la_Place_Stanislas.jpg",
+  },
+  {
+    name: "Fac de Science",
+    description: "Université de Lorraine",
+    level: 5,
+    image: "https://www.crafters.fr/images/boutique/UL/Logo-boutiqueUL.png",
+  },
+  {
+    name: "Place Stanislas",
+    description: "Plus belle place du monde qui se trouve à Nancy",
+    level: 3,
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Fontaine_de_Neptune_sur_la_Place_Stanislas.jpg/1920px-Fontaine_de_Neptune_sur_la_Place_Stanislas.jpg",
+  },
+  {
+    name: "Fac de Science",
+    description: "Université de Lorraine",
+    level: 2,
+    image: "https://www.crafters.fr/images/boutique/UL/Logo-boutiqueUL.png",
+  },
 ]);
 
 // display the final initial data

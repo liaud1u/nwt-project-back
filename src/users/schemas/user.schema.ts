@@ -9,7 +9,7 @@ export type UserDocument = User & Document;
     virtuals: true,
     transform: (doc: any, ret: any) => {
       // delete obsolete data
-      delete ret._id;
+      delete ret.id;
     },
   },
   versionKey: false,
@@ -69,6 +69,12 @@ export class User {
     trim: true,
   })
   email: string;
+
+  @Prop({
+    type: Date,
+    required: true,
+  })
+  lastRollDate: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

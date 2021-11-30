@@ -9,7 +9,7 @@ export type CollectionDocument = Collection & Document;
     virtuals: true,
     transform: (doc: any, ret: any) => {
       // delete obsolete data
-      delete ret._id;
+      delete ret.id;
     },
   },
   versionKey: false,

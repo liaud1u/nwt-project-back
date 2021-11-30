@@ -3,11 +3,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { defaultIfEmpty, from, Observable, pipe } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
-import { Collection, CollectionDocument } from '../schemas/collection.shema';
-import { CreateUserDto } from '../../users/dto/create-user.dto';
-import { User, UserDocument } from '../../users/schemas/user.schema';
+import { Collection, CollectionDocument } from '../schemas/collection.schema';
 import { CreateCollectionDto } from '../dto/create-collection.dto';
-import { UpdateUserDto } from '../../users/dto/update-user.dto';
 import { UpdateCollectionDto } from '../dto/update-collection.dto';
 
 @Injectable()
@@ -122,7 +119,7 @@ export class CollectionsDao {
   /**
    * Check if collection already exists with index and add it in collection list
    *
-   * @param {CreateCollectionDto} collection to create
+   * @param {CreateCollectionDto} collectionDto to create
    *
    * @return {Observable<Collection>}
    */
@@ -135,7 +132,7 @@ export class CollectionsDao {
    * Update a collection in collections list
    *
    * @param {string} id
-   * @param {UpdateCollectionDto} collection
+   * @param {UpdateCollectionDto} collectionDto
    *
    * @return {Observable<Collection | void>}
    */
@@ -166,5 +163,18 @@ export class CollectionsDao {
       filter((doc: CollectionDocument) => !!doc),
       map((doc: CollectionDocument) => doc.toJSON()),
       defaultIfEmpty(undefined),
+    );
+
+  findByUserIdAndCardId = (
+    userId: string,
+    cardId: string,
+  ): Observable<Collection> =>
+    from(this._collectionModel.find({ idCard: cardId, idUser: userId })).pipe(
+      map((doc: CollectionDocument[]) =>
+        !!doc && !!doc.length && doc.length === 1 ? doc[0] : null,
+      ),
+      filter((doc: CollectionDocument) => !!doc),
+      map((doc: CollectionDocument) => doc.toJSON()),
+      defaultIfEmpty(null),
     );
 }

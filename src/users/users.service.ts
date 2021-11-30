@@ -174,6 +174,7 @@ export class UsersService {
     of({
       ...user,
       birthDate: this._parseDate(user.birthDate),
+      lastRollDate: this._parseDate('2000-10-10'),
       // photo: 'https://randomuser.me/api/portraits/lego/6.jpg',
     }).pipe(mergeMap((_: CreateUserDto) => this.hashPassword(_)));
 
@@ -241,5 +242,24 @@ export class UsersService {
     return this.updatePassword(user).pipe(
       mergeMap((_: UpdateUserDto) => this._usersDao.findByIdAndUpdate(id, _)),
     );
+  }
+
+  changeRollDate(user: UserEntity, date: number): Observable<User | void> {
+    return of(user).pipe(
+      mergeMap((_: UserEntity) => this.generateUpdateUserDto(_, date)),
+      mergeMap((_: UpdateUserDto) =>
+        this._usersDao.findByIdAndUpdate(String(user._id), _),
+      ),
+    );
+  }
+
+  private generateUpdateUserDto(
+    user: UserEntity,
+    date: number,
+  ): Observable<UpdateUserDto> {
+    return of({
+      ...user,
+      lastRollDate: date,
+    });
   }
 }

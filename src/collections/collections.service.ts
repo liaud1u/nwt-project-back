@@ -8,12 +8,8 @@ import { catchError, defaultIfEmpty, Observable, of, throwError } from 'rxjs';
 import { filter, map, mergeMap } from 'rxjs/operators';
 import { CollectionsDao } from './dao/collections.dao';
 import { CollectionEntity } from './entities/collection.entity';
-import { Collection } from './schemas/collection.shema';
-import { UserEntity } from '../users/entities/user.entity';
-import { User } from '../users/schemas/user.schema';
-import { CreateUserDto } from '../users/dto/create-user.dto';
+import { Collection } from './schemas/collection.schema';
 import { CreateCollectionDto } from './dto/create-collection.dto';
-import { UpdateUserDto } from '../users/dto/update-user.dto';
 import { UpdateCollectionDto } from './dto/update-collection.dto';
 
 @Injectable()
@@ -128,9 +124,6 @@ export class CollectionsService {
     id: string,
     collectionDto: UpdateCollectionDto,
   ): Observable<CollectionEntity> {
-    console.log('Find 2');
-    console.log(id);
-
     return this._collectionDao.update(id, collectionDto).pipe(
       catchError((e) =>
         e.code === 11000
