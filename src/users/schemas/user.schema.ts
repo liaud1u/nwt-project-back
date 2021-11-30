@@ -9,7 +9,7 @@ export type UserDocument = User & Document;
     virtuals: true,
     transform: (doc: any, ret: any) => {
       // delete obsolete data
-      delete ret.id;
+      //delete ret._id;
     },
   },
   versionKey: false,
