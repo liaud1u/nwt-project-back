@@ -1,4 +1,5 @@
 import {
+  ImATeapotException,
   Injectable,
   NotFoundException,
   UnprocessableEntityException,
@@ -111,6 +112,13 @@ export class CardsService {
   roll(id: string): Observable<CollectionEntity[]> {
     return this._usersService.findOne(id).pipe(
       filter((_: UserEntity) => !!_),
+      mergeMap((_: UserEntity) =>
+        !!_ &&
+        (!_.lastRollDate ||
+          (_.lastRollDate && Date.now().valueOf() - _.lastRollDate > 86400000))
+          ? of(_)
+          : throwError(() => new ImATeapotException()),
+      ),
       mergeMap((_: UserEntity) =>
         this._usersService.changeRollDate(_, Date.now()),
       ),

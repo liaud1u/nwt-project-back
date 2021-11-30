@@ -260,7 +260,6 @@ export class UsersService {
     return of({
       ...user,
       lastRollDate: date,
-      _id: undefined,
     });
   }
 }
