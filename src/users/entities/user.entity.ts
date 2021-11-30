@@ -10,7 +10,7 @@ export class UserEntity {
   })
   @Expose()
   @Type(() => String)
-  _id: string;
+  id: string;
 
   @ApiProperty({
     name: 'password',
