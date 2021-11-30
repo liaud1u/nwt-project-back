@@ -248,7 +248,7 @@ export class UsersService {
     return of(user).pipe(
       mergeMap((_: UserEntity) => this.generateUpdateUserDto(_, date)),
       mergeMap((_: UpdateUserDto) =>
-        this._usersDao.findByIdAndUpdate(String(user._id), _),
+        this._usersDao.findByIdAndUpdate(String(user.id), _),
       ),
     );
   }
