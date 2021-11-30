@@ -11,6 +11,7 @@ import * as Config from 'config';
 import { UsersModule } from './users/users.module';
 import { CardsModule } from './cards/cards.module';
 import { CollectionsModule } from './collections/collections.module';
+import { NotificationsModule } from './notifs/notifications.module';
 
 async function bootstrap(config: AppConfig, swaggerConfig: SwaggerConfig) {
   // create NestJS application
@@ -40,7 +41,13 @@ async function bootstrap(config: AppConfig, swaggerConfig: SwaggerConfig) {
 
   // create swagger document
   const peopleDocument = SwaggerModule.createDocument(app, options, {
-    include: [UsersModule, AppModule, CardsModule, CollectionsModule],
+    include: [
+      UsersModule,
+      AppModule,
+      CardsModule,
+      CollectionsModule,
+      NotificationsModule,
+    ],
   });
 
   // setup swagger module

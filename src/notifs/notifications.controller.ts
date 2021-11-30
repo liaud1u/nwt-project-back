@@ -6,6 +6,7 @@ import {
   Get,
   Logger,
   Param,
+  Patch,
   Post,
   Put,
   UseGuards,
@@ -25,55 +26,55 @@ import {
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Observable, of } from 'rxjs';
-import { CollectionEntity } from './entities/collection.entity';
-import { CollectionsService } from './collections.service';
+import { NotificationEntity } from './entities/notification.entity';
+import { NotificationsService } from './notifications.service';
 import { HttpInterceptor } from '../interceptors/http.interceptor';
 import { UserEntity } from '../users/entities/user.entity';
 import { HandlerParams } from '../users/validators/handler-params';
 import { CreateUserDto } from '../users/dto/create-user.dto';
-import { CreateCollectionDto } from './dto/create-collection.dto';
+import { CreateNotificationDto } from './dto/create-notification.dto';
 import { UpdateUserDto } from '../users/dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { UpdateCollectionDto } from './dto/update-collection.dto';
+import { PatchNotificationDto } from './dto/patch-notification.dto';
 
-@ApiTags('collections')
-@Controller('collections')
+@ApiTags('notifications')
+@Controller('notifications')
 @UseInterceptors(ClassSerializerInterceptor)
 @UseInterceptors(HttpInterceptor)
-export class CollectionsController {
+export class NotificationsController {
   /**
    * Class constructor
-   * @param _collectionService
+   * @param _notificationModel
    */
-  constructor(private readonly _collectionService: CollectionsService) {}
+  constructor(private readonly _notificationModel: NotificationsService) {}
 
   /**
-   * Handler to answer to GET /collections route
+   * Handler to answer to GET /notifications route
    *
    * @returns Observable<NotificationEntity[] | void>
    */
   @ApiOkResponse({
-    description: 'Returns an array of collection',
-    type: CollectionEntity,
+    description: 'Returns an array of notifications',
+    type: NotificationEntity,
     isArray: true,
   })
-  @ApiNoContentResponse({ description: 'No collection exists in database' })
+  @ApiNoContentResponse({ description: 'No notification exists in database' })
   @Get()
-  findAll(): Observable<CollectionEntity[] | void> {
-    return this._collectionService.findAll();
+  findAll(): Observable<NotificationEntity[] | void> {
+    return this._notificationModel.findAll();
   }
 
   /**
-   * Handler to answer to GET /collections/user/:id route
+   * Handler to answer to GET /notification/user/:id route
    *
    * @returns Observable<NotificationEntity[] | void>
    */
   @ApiOkResponse({
-    description: 'Returns the array of Collection for the given "id"',
-    type: CollectionEntity,
+    description: 'Returns the array of notification for the given "id"',
+    type: NotificationEntity,
   })
   @ApiNotFoundResponse({
-    description: 'No Collections for the specified user ID',
+    description: 'No Notifications for the specified user ID',
   })
   @ApiBadRequestResponse({ description: 'Parameter provided is not good' })
   @ApiUnprocessableEntityResponse({
@@ -88,24 +89,24 @@ export class CollectionsController {
   @Get('/users/:id')
   findAllById(
     @Param() params: HandlerParams,
-  ): Observable<CollectionEntity[] | void> {
-    return this._collectionService.findAllById(params.id);
+  ): Observable<NotificationEntity[] | void> {
+    return this._notificationModel.findAllById(params.id);
   }
 
   /**
-   * Handler to answer to GET /collections/:id route
+   * Handler to answer to GET /notification/:id route
    *
-   * @param {HandlerParams} params list of route params to take user id
+   * @param {HandlerParams} params list of route params to take notification id
    *
-   * @returns Observable<CollectionEntity>
+   * @returns Observable<NotificationEntity>
    */
   @ApiOkResponse({
-    description: 'Returns the collection for the given "id"',
-    type: CollectionEntity,
+    description: 'Returns the notification for the given "id"',
+    type: NotificationEntity,
   })
   @ApiNotFoundResponse({
     description:
-      'Collection with the given "id" doesn\'t exist in the database',
+      'Notification with the given "id" doesn\'t exist in the database',
   })
   @ApiBadRequestResponse({ description: 'Parameter provided is not good' })
   @ApiUnprocessableEntityResponse({
@@ -118,23 +119,25 @@ export class CollectionsController {
     allowEmptyValue: false,
   })
   @Get(':id')
-  findOne(@Param() params: HandlerParams): Observable<CollectionEntity | void> {
-    return this._collectionService.findOne(params.id);
+  findOne(
+    @Param() params: HandlerParams,
+  ): Observable<NotificationEntity | void> {
+    return this._notificationModel.findOne(params.id);
   }
 
   /**
-   * Handler to answer to POST /collections route
+   * Handler to answer to POST /notifications route
    *
-   * @param createCollectionDto data to create
+   * @param createNotificationDto data to create
    *
-   * @returns Observable<CollectionEntity>
+   * @returns Observable<NotificationEntity>
    */
   @ApiCreatedResponse({
-    description: 'The collection has been successfully created',
-    type: CollectionEntity,
+    description: 'The notification has been successfully created',
+    type: NotificationEntity,
   })
   @ApiConflictResponse({
-    description: 'The collection already exists in the database',
+    description: 'The notification already exists in the database',
   })
   @ApiBadRequestResponse({ description: 'Payload provided is not good' })
   @ApiUnprocessableEntityResponse({
@@ -146,31 +149,31 @@ export class CollectionsController {
   })
   @ApiBody({
     description: 'Payload to create a new collection',
-    type: CreateCollectionDto,
+    type: CreateNotificationDto,
   })
   @Post()
   @UseGuards(JwtAuthGuard)
   create(
-    @Body() createCollectionDto: CreateCollectionDto,
-  ): Observable<CollectionEntity> {
-    return this._collectionService.create(createCollectionDto);
+    @Body() createNotificationDto: CreateNotificationDto,
+  ): Observable<NotificationEntity> {
+    return this._notificationModel.create(createNotificationDto);
   }
 
   /**
-   * Handler to answer to PUT /collections/:id route
+   * Handler to answer to PUT /notifications/:id route
    *
-   * @param {HandlerParams} params list of route params to take collections id
-   * @param updateCollectionDto data to update
+   * @param {HandlerParams} params list of route params to take notification id
+   * @param updateNotificationDto data to update
    *
-   * @returns Observable<CollectionEntity>
+   * @returns Observable<NotificationEntity>
    */
   @ApiOkResponse({
-    description: 'The collections has been successfully updated',
-    type: CollectionEntity,
+    description: 'The notification has been successfully updated',
+    type: NotificationEntity,
   })
   @ApiNotFoundResponse({
     description:
-      'Collections with the given "id" doesn\'t exist in the database',
+      'Notification with the given "id" doesn\'t exist in the database',
   })
   @ApiConflictResponse({
     description: 'The collections already exists in the database',
@@ -187,36 +190,36 @@ export class CollectionsController {
   })
   @ApiParam({
     name: 'id',
-    description: 'Unique identifier of the collection in the database',
+    description: 'Unique identifier of the notification in the database',
     type: String,
     allowEmptyValue: false,
   })
   @ApiBody({
-    description: 'Payload to update a collection',
-    type: UpdateCollectionDto,
+    description: 'Payload to update a notification',
+    type: PatchNotificationDto,
   })
   @UseGuards(JwtAuthGuard)
-  @Put(':id')
-  update(
+  @Patch(':id')
+  patch(
     @Param() params: HandlerParams,
-    @Body() updateCollectionDto: UpdateCollectionDto,
-  ): Observable<CollectionEntity> {
-    return this._collectionService.update(params.id, updateCollectionDto);
+    @Body() updateNotificationDto: PatchNotificationDto,
+  ): Observable<NotificationEntity> {
+    return this._notificationModel.patch(params.id, updateNotificationDto);
   }
 
   /**
-   * Handler to answer to DELETE /collections/:id route
+   * Handler to answer to DELETE /notification/:id route
    *
-   * @param {HandlerParams} params list of route params to take collection id
+   * @param {HandlerParams} params list of route params to take notification id
    *
    * @returns Observable<void>
    */
   @ApiNoContentResponse({
-    description: 'The collection has been successfully deleted',
+    description: 'The notification has been successfully deleted',
   })
   @ApiNotFoundResponse({
     description:
-      'Collection with the given "id" doesn\'t exist in the database',
+      'Notification with the given "id" doesn\'t exist in the database',
   })
   @ApiBadRequestResponse({ description: 'Parameter provided is not good' })
   @ApiUnprocessableEntityResponse({
@@ -228,13 +231,13 @@ export class CollectionsController {
   })
   @ApiParam({
     name: 'id',
-    description: 'Unique identifier of the collection in the database',
+    description: 'Unique identifier of the notification in the database',
     type: String,
     allowEmptyValue: false,
   })
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   delete(@Param() params: HandlerParams): Observable<void> {
-    return this._collectionService.delete(params.id);
+    return this._notificationModel.delete(params.id);
   }
 }

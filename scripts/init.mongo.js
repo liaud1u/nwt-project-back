@@ -95,3 +95,26 @@ db.getCollection('collections').insertMany([
 
 // display the final initial data
 db.getCollection('collections').find({});
+
+// Insert people array
+db.getCollection('notifications').insertMany([
+  {
+    read: false,
+    accepted: false,
+    type: "notif",
+    idUser: "61a386bb334ac0413ea10011",
+    content: "Bonjour, je suis une notif !",
+    creationTime: new Timestamp()
+  },
+  {
+    read: false,
+    accepted: false,
+    type: "notif",
+    idUser: "61a386bb334ac0413ea10011",
+    content: "Bonjour, je suis une notif 2 !",
+    creationTime: new Timestamp()
+  },
+]);
+
+// display the final initial data
+db.getCollection('notifications').find({});

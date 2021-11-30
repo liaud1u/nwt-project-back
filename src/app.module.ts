@@ -7,6 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { CardsModule } from './cards/cards.module';
 import { CollectionsModule } from './collections/collections.module';
 import * as Config from 'config';
+import { NotificationsModule } from './notifs/notifications.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import * as Config from 'config';
     MongooseModule.forRoot(Config.get<string>('mongodb.uri')),
     CardsModule,
     CollectionsModule,
+    NotificationsModule,
   ],
   providers: [Logger],
   controllers: [AppController],
