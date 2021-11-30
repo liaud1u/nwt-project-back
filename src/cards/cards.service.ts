@@ -12,14 +12,22 @@ import {
   switchMap,
   throwError,
 } from 'rxjs';
-import { filter, map, mergeMap } from 'rxjs/operators';
+import { filter, map, mergeMap, tap } from 'rxjs/operators';
 import { CardEntity } from './entities/card.entity';
 import { Card } from './schemas/card.shema';
 import { CardsDao } from './dao/cards.dao';
+import { UsersService } from '../users/users.service';
+import { UserEntity } from '../users/entities/user.entity';
+import { CollectionsService } from '../collections/collections.service';
+import { CollectionEntity } from '../collections/entities/collection.entity';
 
 @Injectable()
 export class CardsService {
-  constructor(private readonly _cardsDao: CardsDao) {}
+  constructor(
+    private readonly _cardsDao: CardsDao,
+    private readonly _usersService: UsersService,
+    private readonly _collecionService: CollectionsService,
+  ) {}
 
   /**
    * Returns all existing cards in the list
@@ -79,7 +87,9 @@ export class CardsService {
     );
 
   randomNumbers = (num: number): Observable<number[]> => {
-    return of(Array.from({ length: num }, () => Math.floor(Math.random() * 6)));
+    return of(
+      Array.from({ length: num }, () => Math.floor(Math.random() * 5) + 1),
+    );
   };
 
   randomWithLevel = (level: number): Observable<CardEntity> => {
@@ -91,17 +101,38 @@ export class CardsService {
     );
   };
 
-  roll(id: string): Observable<CardEntity[]> {
-    const randomNumbers = Array.from(
-      { length: 10 },
-      () => Math.floor(Math.random() * 5) + 1,
+  generate10RandomCards = (): Observable<CardEntity[]> =>
+    this.randomNumbers(10).pipe(
+      map((_: number[]) => _.map((__: number) => this.randomWithLevel(__))),
+      switchMap((_) => combineLatest(_)),
     );
 
-    const cards = [] as Observable<CardEntity>[];
-
-    randomNumbers.forEach((value) => {
-      cards.push(this.randomWithLevel(value));
-    });
-    return of(cards).pipe(switchMap((_) => combineLatest(_)));
+  roll(id: string): Observable<CollectionEntity[]> {
+    return this._usersService.findOne(id).pipe(
+      filter((_: UserEntity) => !!_),
+      mergeMap((_: UserEntity) =>
+        this.generate10RandomCards().pipe(
+          mergeMap((__) => this.addCardToUser(_.id, __)), // ERREUR ICI POURQUOI ? JE NE SAIS PAS
+          defaultIfEmpty([] as CollectionEntity[]),
+          tap((_) => console.log(_)),
+        ),
+      ),
+    );
   }
+
+  addCardToUser = (
+    userId: string,
+    cards: CardEntity[],
+  ): Observable<CollectionEntity[]> =>
+    of(cards).pipe(
+      tap((_) => console.log('start addCart to User')),
+      map((__: CardEntity[]) => {
+        console.log(__);
+        console.log(__.length);
+        return __.map((___: CardEntity) =>
+          this._collecionService.addCardToUser(userId, ___.id),
+        );
+      }),
+      switchMap((_) => combineLatest(_)),
+    );
 }

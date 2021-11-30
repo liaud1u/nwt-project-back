@@ -112,4 +112,17 @@ export class CollectionsDao {
       map((doc: CollectionDocument) => doc.toJSON()),
       defaultIfEmpty(undefined),
     );
+
+  findByUserIdAndCardId = (
+    userId: string,
+    cardId: string,
+  ): Observable<Collection> =>
+    from(this._collectionModel.find({ idCard: cardId, idUser: userId })).pipe(
+      map((doc: CollectionDocument[]) =>
+        !!doc && !!doc.length && doc.length === 1 ? doc[0] : null,
+      ),
+      filter((doc: CollectionDocument) => !!doc),
+      map((doc: CollectionDocument) => doc.toJSON()),
+      defaultIfEmpty(undefined),
+    );
 }

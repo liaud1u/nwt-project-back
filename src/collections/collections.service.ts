@@ -9,11 +9,7 @@ import { filter, map, mergeMap } from 'rxjs/operators';
 import { CollectionsDao } from './dao/collections.dao';
 import { CollectionEntity } from './entities/collection.entity';
 import { Collection } from './schemas/collection.shema';
-import { UserEntity } from '../users/entities/user.entity';
-import { User } from '../users/schemas/user.schema';
-import { CreateUserDto } from '../users/dto/create-user.dto';
 import { CreateCollectionDto } from './dto/create-collection.dto';
-import { UpdateUserDto } from '../users/dto/update-user.dto';
 import { UpdateCollectionDto } from './dto/update-collection.dto';
 
 @Injectable()
@@ -170,4 +166,47 @@ export class CollectionsService {
             ),
       ),
     );
+
+  addCardToUser = (
+    idUser: string,
+    idCard: string,
+  ): Observable<CollectionEntity> =>
+    this._collectionDao
+      .findByUserIdAndCardId(idUser, idCard)
+      .pipe(
+        mergeMap((_: Collection) =>
+          !!_
+            ? this.increaseAmount(_)
+            : this.createDto(idUser, idCard).pipe(
+                mergeMap((__: CreateCollectionDto) => this.create(__)),
+              ),
+        ),
+      );
+
+  private increaseAmount = (
+    collection: Collection,
+  ): Observable<CollectionEntity> =>
+    of(collection).pipe(
+      mergeMap((_: Collection) => this.copyDtoAndIncreaseAmount(_)),
+      mergeMap((_: UpdateCollectionDto) => this.update(collection._id, _)),
+    );
+
+  private copyDtoAndIncreaseAmount = (
+    collection: Collection,
+  ): Observable<UpdateCollectionDto> =>
+    of({
+      idUser: collection.idUser,
+      idCard: collection.idCard,
+      amount: collection.amount + 1,
+    });
+
+  private createDto = (
+    idUser: string,
+    idCard: string,
+  ): Observable<CreateCollectionDto> =>
+    of({
+      idUser: idUser,
+      idCard: idCard,
+      amount: 1,
+    });
 }

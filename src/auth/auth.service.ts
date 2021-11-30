@@ -54,7 +54,7 @@ export class AuthService {
    * Add the token to the response and remove the password
    *
    * @param user logged
-   * @param token toke,n we want to add
+   * @param token token we want to add
    *
    * @returns {Observable<any>}
    */

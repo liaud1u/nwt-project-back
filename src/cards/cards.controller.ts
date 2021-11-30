@@ -21,6 +21,7 @@ import { Observable } from 'rxjs';
 import { CardEntity } from './entities/card.entity';
 import { HandlerParams } from '../users/validators/handler-params';
 import { LevelParams } from './validators/level-params';
+import { CollectionEntity } from '../collections/entities/collection.entity';
 
 @ApiTags('cards')
 @Controller('cards')
@@ -136,7 +137,7 @@ export class CardsController {
     allowEmptyValue: false,
   })
   @Get('/cards/user/:id/roll')
-  roll(@Param() params: HandlerParams): Observable<CardEntity[] | void> {
+  roll(@Param() params: HandlerParams): Observable<CollectionEntity[] | void> {
     return this._cardsService.roll(params.id);
   }
 }
