@@ -41,8 +41,8 @@ export class CollectionsService {
    *
    * @return {Observable<Collection | void>}
    */
-  findById = (id: string): Observable<CollectionEntity | void> =>
-    this._collectionDao.findById(id).pipe(
+  findById(id: string): Observable<CollectionEntity | void> {
+    return this._collectionDao.findById(id).pipe(
       catchError((e) =>
         throwError(() => new UnprocessableEntityException(e.message)),
       ),
@@ -55,6 +55,7 @@ export class CollectionsService {
             ),
       ),
     );
+  }
 
   /**
    * Returns array of collection of user matching id in parameter
@@ -127,6 +128,9 @@ export class CollectionsService {
     id: string,
     collectionDto: UpdateCollectionDto,
   ): Observable<CollectionEntity> {
+    console.log('Find 2');
+    console.log(id);
+
     return this._collectionDao.update(id, collectionDto).pipe(
       catchError((e) =>
         e.code === 11000
@@ -223,13 +227,15 @@ export class CollectionsService {
       mergeMap((_: UpdateCollectionDto) => this.update(collection._id, _)),
     );
 
-  private increaseWaiting = (
+  private increaseWaiting(
     collection: Collection,
-  ): Observable<CollectionEntity> =>
-    of(collection).pipe(
+  ): Observable<CollectionEntity> {
+    return of(collection).pipe(
       mergeMap((_: Collection) => this.copyDtoAndIncreaseWaiting(_)),
+
       mergeMap((_: UpdateCollectionDto) => this.update(collection._id, _)),
     );
+  }
 
   private decreaseWaiting = (
     collection: Collection,
@@ -322,11 +328,11 @@ export class CollectionsService {
         ),
       );
 
-  addCardWaitingToUser = (
+  addCardWaitingToUser(
     idUser: string,
     idCard: string,
-  ): Observable<CollectionEntity> =>
-    this._collectionDao
+  ): Observable<CollectionEntity> {
+    return this._collectionDao
       .findByUserIdAndCardId(idUser, idCard)
       .pipe(
         mergeMap((_: Collection) =>
@@ -337,6 +343,7 @@ export class CollectionsService {
               ),
         ),
       );
+  }
 
   removeCardWaitingToUser = (
     idUser: string,

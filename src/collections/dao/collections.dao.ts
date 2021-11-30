@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { defaultIfEmpty, from, Observable } from 'rxjs';
+import { defaultIfEmpty, from, Observable, pipe } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { Collection, CollectionDocument } from '../schemas/collection.shema';
 import { CreateUserDto } from '../../users/dto/create-user.dto';
@@ -103,11 +103,13 @@ export class CollectionsDao {
       defaultIfEmpty(undefined),
     );
 
-  findByUserIdAndCardId = (
+  findByUserIdAndCardId(
     userId: string,
     cardId: string,
-  ): Observable<Collection> =>
-    from(this._collectionModel.find({ idCard: cardId, idUser: userId })).pipe(
+  ): Observable<Collection> {
+    return from(
+      this._collectionModel.find({ idCard: cardId, idUser: userId }),
+    ).pipe(
       map((doc: CollectionDocument[]) =>
         !!doc && !!doc.length && doc.length === 1 ? doc[0] : null,
       ),
@@ -115,6 +117,7 @@ export class CollectionsDao {
       map((doc: CollectionDocument) => doc.toJSON()),
       defaultIfEmpty(null),
     );
+  }
 
   /**
    * Check if collection already exists with index and add it in collection list

@@ -18,6 +18,7 @@ import { Trade } from './schemas/trade.shema';
 import { Collection } from '../collections/schemas/collection.shema';
 import { CollectionsDao } from '../collections/dao/collections.dao';
 import { CollectionsService } from '../collections/collections.service';
+import { CollectionEntity } from '../collections/entities/collection.entity';
 
 @Injectable()
 export class TradesService {
@@ -118,19 +119,20 @@ export class TradesService {
   create(tradeDto: CreateTradeDto): Observable<TradeEntity> {
     console.log('Update waiting amount ');
 
-    this._collectionService.addCardWaitingToUser(
-      tradeDto.idUserWaiting,
-      tradeDto.idCard,
-    );
-    this._collectionService.addCardWaitingToUser(
-      tradeDto.idUser,
-      tradeDto.idCardWanted,
-    );
+    console.log(tradeDto);
 
-    return this._tradeDao
-      .create(tradeDto)
-
+    return this._collectionService
+      .addCardWaitingToUser(tradeDto.idUserWaiting, tradeDto.idCard)
       .pipe(
+        map((_) => {
+          this._collectionService.addCardWaitingToUser(
+            tradeDto.idUser,
+            tradeDto.idCardWanted,
+          );
+        }),
+        mergeMap((__) => {
+          return this._tradeDao.create(tradeDto);
+        }),
         catchError((e) =>
           e.code === 11000
             ? throwError(() => new ConflictException(`Id trade already exists`))
