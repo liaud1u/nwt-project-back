@@ -51,7 +51,7 @@ export class NotificationsController {
   /**
    * Handler to answer to GET /notifications route
    *
-   * @returns Observable<NotificationEntity[] | void>
+   * @returns Observable<TradeEntity[] | void>
    */
   @ApiOkResponse({
     description: 'Returns an array of notifications',
@@ -67,7 +67,7 @@ export class NotificationsController {
   /**
    * Handler to answer to GET /notification/user/:id route
    *
-   * @returns Observable<NotificationEntity[] | void>
+   * @returns Observable<TradeEntity[] | void>
    */
   @ApiOkResponse({
     description: 'Returns the array of notification for the given "id"',

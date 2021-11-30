@@ -50,7 +50,7 @@ export class CollectionsController {
   /**
    * Handler to answer to GET /collections route
    *
-   * @returns Observable<NotificationEntity[] | void>
+   * @returns Observable<TradeEntity[] | void>
    */
   @ApiOkResponse({
     description: 'Returns an array of collection',
@@ -66,7 +66,7 @@ export class CollectionsController {
   /**
    * Handler to answer to GET /collections/user/:id route
    *
-   * @returns Observable<NotificationEntity[] | void>
+   * @returns Observable<TradeEntity[] | void>
    */
   @ApiOkResponse({
     description: 'Returns the array of Collection for the given "id"',

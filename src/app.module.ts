@@ -8,6 +8,7 @@ import { CardsModule } from './cards/cards.module';
 import { CollectionsModule } from './collections/collections.module';
 import * as Config from 'config';
 import { NotificationsModule } from './notifs/notifications.module';
+import { TradesModule } from './trades/trades.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { NotificationsModule } from './notifs/notifications.module';
     CardsModule,
     CollectionsModule,
     NotificationsModule,
+    TradesModule,
   ],
   providers: [Logger],
   controllers: [AppController],

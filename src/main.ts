@@ -12,6 +12,7 @@ import { UsersModule } from './users/users.module';
 import { CardsModule } from './cards/cards.module';
 import { CollectionsModule } from './collections/collections.module';
 import { NotificationsModule } from './notifs/notifications.module';
+import { TradesModule } from './trades/trades.module';
 
 async function bootstrap(config: AppConfig, swaggerConfig: SwaggerConfig) {
   // create NestJS application
@@ -47,6 +48,7 @@ async function bootstrap(config: AppConfig, swaggerConfig: SwaggerConfig) {
       CardsModule,
       CollectionsModule,
       NotificationsModule,
+      TradesModule,
     ],
   });
 

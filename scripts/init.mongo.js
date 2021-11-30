@@ -43,7 +43,7 @@ db.getCollection('cards').insertMany([
 // display the final initial data
 db.getCollection('cards').find({});
 
-// Insert people array
+// Insert collections array
 db.getCollection('collections').insertMany([
   {
     amount: 1,
@@ -62,7 +62,7 @@ db.getCollection('collections').insertMany([
 // display the final initial data
 db.getCollection('collections').find({});
 
-// Insert people array
+// Insert notifications array
 db.getCollection('notifications').insertMany([
   {
     read: false,
@@ -84,3 +84,18 @@ db.getCollection('notifications').insertMany([
 
 // display the final initial data
 db.getCollection('notifications').find({});
+
+// Insert trade array
+db.getCollection('trades').insertMany([
+  {
+    accepted: false,
+    idUserWaiting: "61a386bb334ac0413ea10011",
+    idUser: "61a386bb334ac0413ea10012",
+    idCardWanted: "61a3c03e334ac0413ea10013",
+    idCard: "61a3c03e334ac0413ea10014",
+    creationTime: new Timestamp()
+  }
+]);
+
+// display the final initial data
+db.getCollection('trades').find({});
