@@ -1,12 +1,9 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsBoolean,
-  IsDate,
   IsDateString,
-  IsEmail,
   IsMongoId,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
 } from 'class-validator';
@@ -25,7 +22,7 @@ export class PatchNotificationDto {
 
   @ApiProperty({
     name: 'creationTime',
-    description: 'when the notification has been created',
+    description: 'Date when the notification has been created',
     example: '2021-11-29T21:36:21.000+0100',
   })
   @IsNotEmpty()
@@ -35,7 +32,7 @@ export class PatchNotificationDto {
 
   @ApiProperty({
     name: 'read',
-    description: 'is the message read',
+    description: 'True if the message is read',
     example: true,
   })
   @IsBoolean()
@@ -45,7 +42,7 @@ export class PatchNotificationDto {
 
   @ApiProperty({
     name: 'accepted',
-    description: 'is the message accepted',
+    description: 'True if the message is accepted',
     example: true,
   })
   @IsBoolean()
@@ -55,7 +52,7 @@ export class PatchNotificationDto {
 
   @ApiProperty({
     name: 'type',
-    description: 'type of notification',
+    description: 'Type of notification',
     example: 'notif',
   })
   @IsString()
@@ -65,7 +62,7 @@ export class PatchNotificationDto {
 
   @ApiProperty({
     name: 'content',
-    description: 'content of the notification',
+    description: 'Content of the notification',
     example: 'Hello, I am a notification !',
   })
   @IsString()

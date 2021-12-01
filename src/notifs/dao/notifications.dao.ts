@@ -3,10 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { defaultIfEmpty, from, Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
-import { CreateUserDto } from '../../users/dto/create-user.dto';
-import { User, UserDocument } from '../../users/schemas/user.schema';
 import { CreateNotificationDto } from '../dto/create-notification.dto';
-import { UpdateUserDto } from '../../users/dto/update-user.dto';
 import { PatchNotificationDto } from '../dto/patch-notification.dto';
 import {
   Notification,
@@ -54,7 +51,7 @@ export class NotificationsDao {
     );
 
   /**
-   * Call mongoose method, call toJSON on each result and returns NotificationModel[] or undefined
+   * Call mongoose method, call toJSON on each result and returns Notification[] or undefined
    *
    * @return {Observable<Notification[] | void>}
    */
@@ -90,10 +87,10 @@ export class NotificationsDao {
    */
   patch = (
     id: string,
-    notificationDto: PatchNotificationDto,
+    notification: PatchNotificationDto,
   ): Observable<Notification | void> =>
     from(
-      this._notificationModel.findByIdAndUpdate(id, notificationDto, {
+      this._notificationModel.findByIdAndUpdate(id, notification, {
         new: true,
         runValidators: true,
       }),

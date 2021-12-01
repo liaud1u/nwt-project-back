@@ -8,11 +8,7 @@ import { catchError, defaultIfEmpty, Observable, of, throwError } from 'rxjs';
 import { filter, map, mergeMap } from 'rxjs/operators';
 import { NotificationsDao } from './dao/notifications.dao';
 import { NotificationEntity } from './entities/notification.entity';
-import { UserEntity } from '../users/entities/user.entity';
-import { User } from '../users/schemas/user.schema';
-import { CreateUserDto } from '../users/dto/create-user.dto';
 import { CreateNotificationDto } from './dto/create-notification.dto';
-import { UpdateUserDto } from '../users/dto/update-user.dto';
 import { PatchNotificationDto } from './dto/patch-notification.dto';
 import { Notification } from './schemas/notification.shema';
 
@@ -35,11 +31,11 @@ export class NotificationsService {
     );
 
   /**
-   * Returns one notifications of the list matching id in parameter
+   * Returns one notification of the list matching id in parameter
    *
-   * @param {string} id of the collection in the db
+   * @param {string} id of the notification in the db
    *
-   * @return {Observable<Notification | void>}
+   * @return {Observable<NotificationEntity | void>}
    */
   findById = (id: string): Observable<NotificationEntity | void> =>
     this._notificationDao.findById(id).pipe(
@@ -51,19 +47,17 @@ export class NotificationsService {
           ? of(new NotificationEntity(_))
           : throwError(
               () =>
-                new NotFoundException(
-                  `notifications with id '${id}' not found`,
-                ),
+                new NotFoundException(`Notification with id '${id}' not found`),
             ),
       ),
     );
 
   /**
-   * Returns array of notifications of user matching id in parameter
+   * Returns array of notifications of the user matching id in parameter
    *
    * @param {string} id of the user in the db
    *
-   * @return {Observable<Notification[] | void>}
+   * @return {Observable<NotificationEntity[] | void>}
    */
   findAllById = (id: string): Observable<NotificationEntity[] | void> =>
     this._notificationDao.findByUserId(id).pipe(
@@ -75,7 +69,7 @@ export class NotificationsService {
     );
 
   /**
-   * Returns one notifications of the list matching id in parameter
+   * Returns one notification matching id in parameter
    *
    * @param {string} id of the notifications
    *
@@ -99,16 +93,16 @@ export class NotificationsService {
     );
 
   /**
-   * Check if notifications already exists and add it in notifications list
+   * Check if notification already exists and add it in notifications list
    *
-   * @param notifications to create
+   * @param notification to create
    *
    * @returns {Observable<NotificationEntity>}
    */
   create = (
-    notificationDto: CreateNotificationDto,
+    notification: CreateNotificationDto,
   ): Observable<NotificationEntity> =>
-    this._notificationDao.create(notificationDto).pipe(
+    this._notificationDao.create(notification).pipe(
       catchError((e) =>
         e.code === 11000
           ? throwError(
@@ -120,7 +114,7 @@ export class NotificationsService {
     );
 
   /**
-   * Update a notification in notifications list
+   * Update a notification with the matching id in the list of notifications
    *
    * @param {string} id of the notification to update
    * @param notification data to update
@@ -129,9 +123,9 @@ export class NotificationsService {
    */
   patch(
     id: string,
-    notificationDto: PatchNotificationDto,
+    notification: PatchNotificationDto,
   ): Observable<NotificationEntity> {
-    return this._notificationDao.patch(id, notificationDto).pipe(
+    return this._notificationDao.patch(id, notification).pipe(
       catchError((e) =>
         e.code === 11000
           ? throwError(
@@ -151,7 +145,7 @@ export class NotificationsService {
   }
 
   /**
-   * Deletes one collection in users list
+   * Delete one notification in the list of notifications
    *
    * @param {string} id of the collection to delete
    *

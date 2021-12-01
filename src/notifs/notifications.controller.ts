@@ -4,11 +4,9 @@ import {
   Controller,
   Delete,
   Get,
-  Logger,
   Param,
   Patch,
   Post,
-  Put,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -25,17 +23,14 @@ import {
   ApiUnauthorizedResponse,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { NotificationEntity } from './entities/notification.entity';
 import { NotificationsService } from './notifications.service';
 import { HttpInterceptor } from '../interceptors/http.interceptor';
-import { UserEntity } from '../users/entities/user.entity';
-import { HandlerParams } from '../users/validators/handler-params';
-import { CreateUserDto } from '../users/dto/create-user.dto';
 import { CreateNotificationDto } from './dto/create-notification.dto';
-import { UpdateUserDto } from '../users/dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PatchNotificationDto } from './dto/patch-notification.dto';
+import { HandlerParams } from './validators/handler-params';
 
 @ApiTags('notifications')
 @Controller('notifications')
