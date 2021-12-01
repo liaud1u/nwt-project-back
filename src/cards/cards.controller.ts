@@ -4,6 +4,7 @@ import {
   Get,
   Logger,
   Param,
+  Put,
   UseInterceptors,
 } from '@nestjs/common';
 import {
@@ -136,7 +137,7 @@ export class CardsController {
     type: String,
     allowEmptyValue: false,
   })
-  @Get('/user/:id/roll')
+  @Put('/user/:id/roll')
   roll(@Param() params: HandlerParams): Observable<CollectionEntity[] | void> {
     return this._cardsService.roll(params.id);
   }

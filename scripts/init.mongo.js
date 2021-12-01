@@ -8,7 +8,8 @@ db.getCollection('users').insertMany([
     firstname: 'Nicolas',
     lastname: 'Sarkozy',
     birthDate: 126316800,
-    email: 'Nicolas.Sarkozy@ARGENT.com'
+    email: 'Nicolas.Sarkozy@ARGENT.com',
+    lastRollDate: 126316800,
   },
   {
     password: '$2b$10$RogYBFwjpVQXEq09mF8d2.GZu7fShzqFJTXVRHWKZoLw.q1QNEOsu',
@@ -17,7 +18,8 @@ db.getCollection('users').insertMany([
     firstname: 'Jean',
     lastname: 'Cristhobaldo',
     birthDate: 915235200,
-    email: 'Jean.Cristho@gmail.com'
+    email: 'Jean.Cristho@gmail.com',
+    lastRollDate: 915235200,
   }
 ]);
 

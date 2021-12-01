@@ -120,8 +120,9 @@ export class CardsService {
    */
   generate10RandomCards = (): Observable<CardEntity[]> =>
     this.randomNumbers(10).pipe(
-      map((_: number[]) => _.map((__: number) => this.randomWithLevel(__))),
-      switchMap((_) => combineLatest(_)),
+      // We pipe on an array of numbers
+      map((_: number[]) => _.map((__: number) => this.randomWithLevel(__))), // randomWithLevel return an Observable of CardEntity
+      switchMap((_) => combineLatest(_)), // We assemble the array of observable to make it an Observable of Array
     );
 
   /**
@@ -137,7 +138,8 @@ export class CardsService {
       mergeMap((_: UserEntity) =>
         !!_ &&
         (!_.lastRollDate || // If the date is not present then we do the roll
-          (_.lastRollDate && Date.now().valueOf() - _.lastRollDate > 86400000))
+          (_.lastRollDate &&
+            Date.now().valueOf() - _.lastRollDate > 1)) /*86400000*/
           ? of(_)
           : throwError(() => new ImATeapotException()),
       ),
