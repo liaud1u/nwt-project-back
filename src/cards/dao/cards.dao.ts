@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { Card, CardDocument } from '../schemas/card.shema';
 import { defaultIfEmpty, from, Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
+import { CreateCardDto } from '../dto/create-card.dto';
 
 @Injectable()
 export class CardsDao {
@@ -54,6 +55,25 @@ export class CardsDao {
     from(this._cardModel.find({ level: level })).pipe(
       filter((docs: CardDocument[]) => !!docs && docs.length > 0),
       map((docs: CardDocument[]) => docs.map((_: CardDocument) => _.toJSON())),
+      defaultIfEmpty(undefined),
+    );
+
+  /**
+   * Add card in the cards' list
+   *
+   * @param {CreateCardDto} card to create
+   *
+   * @return {Observable<Card>}
+   */
+  save = (card: CreateCardDto): Observable<Card> =>
+    from(new this._cardModel(card).save()).pipe(
+      map((doc: CardDocument) => doc.toJSON()),
+    );
+
+  findByIdAndRemove = (id: string) =>
+    from(this._cardModel.findByIdAndRemove(id)).pipe(
+      filter((doc: CardDocument) => !!doc),
+      map((doc: CardDocument) => doc.toJSON()),
       defaultIfEmpty(undefined),
     );
 }

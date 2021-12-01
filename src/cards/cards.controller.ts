@@ -1,18 +1,27 @@
 import {
+  Body,
   ClassSerializerInterceptor,
   Controller,
+  Delete,
   Get,
   Param,
+  Post,
   Put,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiBody,
+  ApiConflictResponse,
+  ApiCreatedResponse,
   ApiNoContentResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiParam,
   ApiTags,
+  ApiUnauthorizedResponse,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { HttpInterceptor } from '../interceptors/http.interceptor';
@@ -22,6 +31,9 @@ import { CardEntity } from './entities/card.entity';
 import { HandlerParams } from '../users/validators/handler-params';
 import { LevelParams } from './validators/level-params';
 import { CollectionEntity } from '../collections/entities/collection.entity';
+import { UserEntity } from '../users/entities/user.entity';
+import { CreateCardDto } from './dto/create-card.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('cards')
 @Controller('cards')
@@ -112,6 +124,67 @@ export class CardsController {
   }
 
   /**
+   * Handler to answer to POST /cards route
+   *
+   * @param createCardDto data to create
+   *
+   * @returns Observable<CardEntity>
+   */
+  @ApiCreatedResponse({
+    description: 'The card has been successfully created',
+    type: UserEntity,
+  })
+  @ApiConflictResponse({
+    description: 'The card already exists in the database',
+  })
+  @ApiBadRequestResponse({ description: 'Payload provided is not good' })
+  @ApiUnprocessableEntityResponse({
+    description: "The request can't be performed in the database",
+  })
+  @ApiBody({
+    description: 'Payload to create a new card',
+    type: CreateCardDto,
+  })
+  @Post()
+  create(@Body() createCardDto: CreateCardDto): Observable<CardEntity> {
+    return this._cardsService.create(createCardDto);
+  }
+
+  /**
+   * Handler to answer to DELETE /cards/:id route
+   *
+   * @param {HandlerParams} params list of route params to take card id
+   *
+   * @returns Observable<void>
+   */
+  @ApiNoContentResponse({
+    description: 'The card has been successfully deleted',
+  })
+  @ApiNotFoundResponse({
+    description: 'Card with the given "id" doesn\'t exist in the database',
+  })
+  @ApiBadRequestResponse({ description: 'Parameter provided is not good' })
+  @ApiUnprocessableEntityResponse({
+    description: "The request can't be performed in the database",
+  })
+  @ApiUnauthorizedResponse({
+    description:
+      'An access token of the user is required to perform this action',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Unique identifier of the card in the database',
+    type: String,
+    allowEmptyValue: false,
+  })
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  delete(@Param() params: HandlerParams): Observable<void> {
+    return this._cardsService.delete(params.id);
+  }
+
+  /**
    * Handler to answer to PUT /cards/user/:id/roll route
    *
    * @param {HandlerParams} params list of route params to take card id
@@ -119,8 +192,8 @@ export class CardsController {
    * @returns Observable<CardEntity[]>
    */
   @ApiOkResponse({
-    description: 'Returns the list of cards gained by the users',
-    type: CardEntity,
+    description: 'Returns the list of collections rerolled by the users',
+    type: CollectionEntity,
     isArray: true,
   })
   @ApiNotFoundResponse({

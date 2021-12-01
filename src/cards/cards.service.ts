@@ -23,6 +23,7 @@ import { CollectionsService } from '../collections/collections.service';
 import { CollectionEntity } from '../collections/entities/collection.entity';
 import { User } from '../users/schemas/user.schema';
 import { cardConstants } from './constants';
+import { CreateCardDto } from './dto/create-card.dto';
 
 @Injectable()
 export class CardsService {
@@ -191,5 +192,42 @@ export class CardsService {
         ),
       ),
       switchMap((_) => combineLatest(_)), // Observable<CollectionEntity>[] to Observable<CollectionEntity[]>
+    );
+
+  /**
+   * Create a new card given in parameters
+   *
+   * @param card to create
+   *
+   * @return Observable<CardEntity>
+   */
+  create = (card: CreateCardDto): Observable<CardEntity> =>
+    of(card).pipe(
+      mergeMap((_: CreateCardDto) => this._cardsDao.save(_)),
+      catchError((e) =>
+        throwError(() => new UnprocessableEntityException(e.message)),
+      ),
+      map((_: Card) => new CardEntity(_)),
+    );
+
+  /**
+   * Deletes one card in cards list
+   *
+   * @param {string} id of the card to delete
+   *
+   * @returns {Observable<void>}
+   */
+  delete = (id: string): Observable<void> =>
+    this._cardsDao.findByIdAndRemove(id).pipe(
+      catchError((e) =>
+        throwError(() => new UnprocessableEntityException(e.message)),
+      ),
+      mergeMap((_: Card) =>
+        !!_
+          ? of(undefined)
+          : throwError(
+              () => new NotFoundException(`User with id '${id}' not found`),
+            ),
+      ),
     );
 }
