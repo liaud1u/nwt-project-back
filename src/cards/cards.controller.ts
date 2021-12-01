@@ -136,7 +136,7 @@ export class CardsController {
     type: String,
     allowEmptyValue: false,
   })
-  @Get('/cards/user/:id/roll')
+  @Get('/user/:id/roll')
   roll(@Param() params: HandlerParams): Observable<CollectionEntity[] | void> {
     return this._cardsService.roll(params.id);
   }
