@@ -175,7 +175,10 @@ export class UsersService {
       ...user,
       birthDate: this._parseDate(user.birthDate),
       lastRollDate: this._parseDate('2000-10-10'),
-      // photo: 'https://randomuser.me/api/portraits/lego/6.jpg',
+      photo:
+        !!user.photo && user.photo != ''
+          ? user.photo
+          : 'https://randomuser.me/api/portraits/lego/6.jpg',
     }).pipe(mergeMap((_: CreateUserDto) => this.hashPassword(_)));
 
   /**
@@ -244,6 +247,14 @@ export class UsersService {
     );
   }
 
+  /**
+   * Change the date of last roll with the new date
+   *
+   * @param user the user
+   * @param date the new date
+   *
+   * @return Observable<User | void>
+   */
   changeRollDate(user: UserEntity, date: number): Observable<User | void> {
     return of(user).pipe(
       mergeMap((_: UserEntity) => this.generateUpdateUserDto(_, date)),
@@ -253,6 +264,14 @@ export class UsersService {
     );
   }
 
+  /**
+   * Generate a updateUserDto for update purpose
+   * @param user the UserEntity
+   * @param date the date (for the lastRollDate)
+   *
+   * @return Observable<UpdateUserDto>
+   * @private
+   */
   private generateUpdateUserDto(
     user: UserEntity,
     date: number,

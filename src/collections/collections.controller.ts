@@ -124,7 +124,7 @@ export class CollectionsController {
   /**
    * Handler to answer to GET /collections/:idUser/:idCard route
    *
-   * @param {DoubleHandlerParams} params list of route params to take user id
+   * @param {DoubleIdParams} params list of route params to take user id
    *
    * @returns Observable<CollectionEntity>
    */

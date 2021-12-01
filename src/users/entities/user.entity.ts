@@ -15,7 +15,7 @@ export class UserEntity {
   @ApiProperty({
     name: 'password',
     description: "User's password in the database",
-    example: 'AAAA123',
+    example: 'HTeu4ud.S+@84/6',
   })
   @Exclude()
   @Type(() => String)
@@ -24,7 +24,7 @@ export class UserEntity {
   @ApiProperty({
     name: 'username',
     description: 'Unique username of the user',
-    example: 'Jean Cristhobaldo',
+    example: 'jean',
   })
   @Expose()
   @Type(() => String)
@@ -33,7 +33,7 @@ export class UserEntity {
   @ApiProperty({
     name: 'firstname',
     description: 'Firstname',
-    example: 'Mclaughlin',
+    example: 'Jean',
   })
   @Expose()
   @Type(() => String)
@@ -42,7 +42,7 @@ export class UserEntity {
   @ApiProperty({
     name: 'lastname',
     description: 'Lastname',
-    example: 'Cochran',
+    example: 'Cristho',
   })
   @Expose()
   @Type(() => String)
@@ -51,7 +51,7 @@ export class UserEntity {
   @ApiProperty({
     name: 'email',
     description: 'Email',
-    example: 'Mclaughlin.Cochran@undefined.com',
+    example: 'jean.cristho@mail.com',
   })
   @Expose()
   @Type(() => String)
@@ -77,7 +77,7 @@ export class UserEntity {
 
   @ApiProperty({
     name: 'lastRollDate',
-    description: '',
+    description: 'Last Time the Users has rolled cards',
     example: '2000-12-31',
   })
   @Expose()

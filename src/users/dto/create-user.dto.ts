@@ -11,7 +11,7 @@ export class CreateUserDto {
   @ApiProperty({
     name: 'username',
     description: 'Unique username',
-    example: 'VictorDu34',
+    example: 'jean',
   })
   @IsString()
   @IsNotEmpty()
@@ -38,7 +38,7 @@ export class CreateUserDto {
   @ApiProperty({
     name: 'email',
     description: 'Email',
-    example: 'Jean.Cristho@mail.com',
+    example: 'jean.cristho@mail.com',
   })
   @IsEmail()
   email: string;

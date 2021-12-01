@@ -30,13 +30,13 @@ export class AppController {
   /**
    * Handler to answer to POST /auth/login route
    *
-   * @param {HandlerParams} body list of route params to take user username and password
+   * @param {HandlerParams} body list of route params for username and password
    *
    * @returns Observable<UserEntity>
    */
   @ApiOkResponse({
     description:
-      'Returns the user for the given "username" and the token to stay connected',
+      'Returns the user for the given "username" and the token_access to stay connected',
   })
   @ApiNotFoundResponse({
     description:
