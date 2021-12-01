@@ -38,6 +38,7 @@ async function bootstrap(config: AppConfig, swaggerConfig: SwaggerConfig) {
     .setDescription(swaggerConfig.description)
     .setVersion(swaggerConfig.version)
     .addTag(swaggerConfig.tag)
+    .addBearerAuth()
     .build();
 
   // create swagger document

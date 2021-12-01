@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiBody,
   ApiConflictResponse,
   ApiCreatedResponse,
@@ -148,6 +149,7 @@ export class NotificationsController {
   })
   @Post()
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   create(
     @Body() createNotificationDto: CreateNotificationDto,
   ): Observable<NotificationEntity> {
@@ -194,6 +196,7 @@ export class NotificationsController {
     type: PatchNotificationDto,
   })
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Patch(':id')
   patch(
     @Param() params: HandlerParams,
@@ -231,6 +234,7 @@ export class NotificationsController {
     allowEmptyValue: false,
   })
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Delete(':id')
   delete(@Param() params: HandlerParams): Observable<void> {
     return this._notificationModel.delete(params.id);

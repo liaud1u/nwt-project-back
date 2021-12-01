@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiBody,
   ApiConflictResponse,
   ApiCreatedResponse,
@@ -220,6 +221,7 @@ export class CollectionsController {
   })
   @Post()
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   create(
     @Body() createCollectionDto: CreateCollectionDto,
   ): Observable<CollectionEntity> {
@@ -266,6 +268,7 @@ export class CollectionsController {
     type: UpdateCollectionDto,
   })
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Put(':id')
   update(
     @Param() params: HandlerParams,
@@ -303,6 +306,7 @@ export class CollectionsController {
     allowEmptyValue: false,
   })
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Delete(':id')
   delete(@Param() params: HandlerParams): Observable<void> {
     return this._collectionService.delete(params.id);

@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiBody,
   ApiConflictResponse,
   ApiCreatedResponse,
@@ -150,6 +151,7 @@ export class UsersController {
     allowEmptyValue: false,
   })
   @ApiBody({ description: 'Payload to update a person', type: UpdateUserDto })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   update(
@@ -186,6 +188,7 @@ export class UsersController {
     type: String,
     allowEmptyValue: false,
   })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   delete(@Param() params: HandlerParams): Observable<void> {

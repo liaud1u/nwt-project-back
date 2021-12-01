@@ -13,6 +13,7 @@ import { HandlerBody } from './auth/validators/handler-body';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { Observable, of } from 'rxjs';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -69,6 +70,7 @@ export class AppController {
   @ApiUnauthorizedResponse({
     description: 'The token given is not working or is wrong',
   })
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @Get('auth/test')
   getProfile(@Body() req): Observable<string> {

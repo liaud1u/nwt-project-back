@@ -4,16 +4,15 @@ import {
   Controller,
   Delete,
   Get,
-  Logger,
   Param,
   Patch,
   Post,
-  Put,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiBody,
   ApiConflictResponse,
   ApiCreatedResponse,
@@ -29,11 +28,8 @@ import { Observable, of } from 'rxjs';
 import { TradeEntity } from './entities/trade.entity';
 import { TradesService } from './trades.service';
 import { HttpInterceptor } from '../interceptors/http.interceptor';
-import { UserEntity } from '../users/entities/user.entity';
 import { HandlerParams } from '../users/validators/handler-params';
-import { CreateUserDto } from '../users/dto/create-user.dto';
 import { CreateTradeDto } from './dto/create-trade.dto';
-import { UpdateUserDto } from '../users/dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PatchTradeDto } from './dto/patch-trade.dto';
 
@@ -182,6 +178,7 @@ export class TradesController {
   })
   @Post()
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   create(@Body() createTradeDto: CreateTradeDto): Observable<TradeEntity> {
     return this._tradeModel.create(createTradeDto);
   }
@@ -225,6 +222,7 @@ export class TradesController {
     type: PatchTradeDto,
   })
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Patch(':id')
   patch(
     @Param() params: HandlerParams,
@@ -261,6 +259,7 @@ export class TradesController {
     allowEmptyValue: false,
   })
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Delete(':id')
   delete(@Param() params: HandlerParams): Observable<void> {
     return this._tradeModel.delete(params.id);
@@ -294,6 +293,7 @@ export class TradesController {
     allowEmptyValue: false,
   })
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Post('/accept/:id')
   accept(@Param() params: HandlerParams): Observable<void> {
     return of(this._tradeModel.accept(params.id));
@@ -327,6 +327,7 @@ export class TradesController {
     allowEmptyValue: false,
   })
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @Post('/decline/:id')
   decline(@Param() params: HandlerParams): Observable<void> {
     return of(this._tradeModel.decline(params.id));
