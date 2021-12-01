@@ -1,13 +1,5 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  IsDateString,
-  IsEmail,
-  IsMongoId,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsMongoId, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CreateCollectionDto {
   @ApiProperty({
@@ -41,7 +33,7 @@ export class CreateCollectionDto {
 
   @ApiProperty({
     name: 'waiting',
-    description: 'amount of this card wich is currently waiting for a trade',
+    description: 'amount of this card which is currently waiting for a trade',
     example: 0,
   })
   @IsNumber()

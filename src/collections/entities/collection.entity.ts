@@ -42,7 +42,7 @@ export class CollectionEntity {
 
   @ApiProperty({
     name: 'idCard',
-    description: 'Id of the collection',
+    description: 'Id of the card',
     example: '61a3c03e334ac0413a10013',
   })
   @Expose()

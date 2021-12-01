@@ -25,7 +25,7 @@ export class CardEntity {
     name: 'description',
     description: 'Description of the card',
     example:
-      'La gare de Nancy est très importante pour la ville elle est un axe centrale pour le transport',
+      'La gare de Nancy est très importante pour la ville elle est un axe centrale pour le transport et la logistique de la ville',
   })
   @Expose()
   @Type(() => String)

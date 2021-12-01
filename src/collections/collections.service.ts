@@ -97,14 +97,14 @@ export class CollectionsService {
    *
    * @returns {Observable<CollectionEntity>}
    */
-  create = (collectionDto: CreateCollectionDto): Observable<CollectionEntity> =>
-    this._collectionDao.create(collectionDto).pipe(
+  create = (collection: CreateCollectionDto): Observable<CollectionEntity> =>
+    this._collectionDao.create(collection).pipe(
       catchError((e) =>
         e.code === 11000
           ? throwError(
               () =>
                 new ConflictException(
-                  `Id card'${collectionDto.idCard}' and id user '${collectionDto.idUser}' already exists`,
+                  `Id card'${collection.idCard}' and id user '${collection.idUser}' already exists`,
                 ),
             )
           : throwError(() => new UnprocessableEntityException(e.message)),
@@ -122,15 +122,15 @@ export class CollectionsService {
    */
   update(
     id: string,
-    collectionDto: UpdateCollectionDto,
+    collection: UpdateCollectionDto,
   ): Observable<CollectionEntity> {
-    return this._collectionDao.update(id, collectionDto).pipe(
+    return this._collectionDao.update(id, collection).pipe(
       catchError((e) =>
         e.code === 11000
           ? throwError(
               () =>
                 new ConflictException(
-                  `Id card'${collectionDto.idCard}' and id user '${collectionDto.idUser}' already exists`,
+                  `Id card'${collection.idCard}' and id user '${collection.idUser}' already exists`,
                 ),
             )
           : throwError(() => new UnprocessableEntityException(e.message)),
@@ -147,7 +147,7 @@ export class CollectionsService {
   }
 
   /**
-   * Deletes one collection in users list
+   * Delete one collection in users list
    *
    * @param {string} id of the collection to delete
    *
@@ -204,80 +204,112 @@ export class CollectionsService {
       defaultIfEmpty(undefined),
     );
 
+  /**
+   * Increase the amount by 1 of the collection
+   *
+   * @param collection the collection you want to increase the amount
+   *
+   * @return Observable<CollectionEntity>
+   */
   private increaseAmount = (
     collection: Collection,
   ): Observable<CollectionEntity> =>
     of(collection).pipe(
-      mergeMap((_: Collection) => this.copyDtoAndIncreaseAmount(_)),
+      mergeMap((_: Collection) =>
+        this.copyDtoAndIncreaseAmountAndWaiting(_, 1, 0),
+      ),
       mergeMap((_: UpdateCollectionDto) => this.update(collection._id, _)),
     );
 
+  /**
+   * Decrease the amount by 1 of the collection
+   *
+   * @param collection the collection you want to decrease the amount
+   *
+   * @return Observable<CollectionEntity>
+   */
   private decreaseAmount = (
     collection: Collection,
   ): Observable<CollectionEntity> =>
     of(collection).pipe(
-      mergeMap((_: Collection) => this.copyDtoAndDecreaseAmount(_)),
+      mergeMap(
+        (
+          _: Collection, // We decrease the amount
+        ) => this.copyDtoAndIncreaseAmountAndWaiting(_, -1, 0),
+      ),
       mergeMap((_: UpdateCollectionDto) => this.update(collection._id, _)),
     );
 
+  /**
+   * Increase the waiting number by 1 of the collection
+   *
+   * @param collection the collection you want to increase the waiting number by 1
+   *
+   * @return Observable<CollectionEntity>
+   */
   private increaseWaiting(
     collection: Collection,
   ): Observable<CollectionEntity> {
     return of(collection).pipe(
-      mergeMap((_: Collection) => this.copyDtoAndIncreaseWaiting(_)),
+      mergeMap(
+        (
+          _: Collection, // We increase the waiting
+        ) => this.copyDtoAndIncreaseAmountAndWaiting(_, 0, 1),
+      ),
 
       mergeMap((_: UpdateCollectionDto) => this.update(collection._id, _)),
     );
   }
 
+  /**
+   * Decrease the waiting number by 1 of the collection
+   *
+   * @param collection the collection you want to decrease the waiting number by 1
+   *
+   * @return Observable<CollectionEntity>
+   */
   private decreaseWaiting = (
     collection: Collection,
   ): Observable<CollectionEntity> =>
     of(collection).pipe(
-      mergeMap((_: Collection) => this.copyDtoAndDecreaseWaiting(_)),
+      mergeMap(
+        (
+          _: Collection, // We decrease the waiting
+        ) => this.copyDtoAndIncreaseAmountAndWaiting(_, 0, -1),
+      ),
       mergeMap((_: UpdateCollectionDto) => this.update(collection._id, _)),
     );
 
-  private copyDtoAndIncreaseAmount = (
+  /**
+   * Increase the waiting number by 1 of the collection
+   *
+   * @param collection the collection you want to increase the waiting number by 1
+   * @param amountToIncrease increase of the amount (can be negative)
+   * @param waitingToIncrease increase of the waiting (can be negative)
+   *
+   * @return Observable<UpdateCollectionDto>
+   */
+  private copyDtoAndIncreaseAmountAndWaiting = (
     collection: Collection,
+    amountToIncrease: number,
+    waitingToIncrease: number,
   ): Observable<UpdateCollectionDto> =>
     of({
       idUser: collection.idUser,
       idCard: collection.idCard,
-      amount: collection.amount + 1,
-      waiting: collection.waiting,
+      amount: collection.amount + amountToIncrease,
+      waiting: collection.waiting + waitingToIncrease,
     });
 
-  private copyDtoAndDecreaseAmount = (
-    collection: Collection,
-  ): Observable<UpdateCollectionDto> =>
-    of({
-      idUser: collection.idUser,
-      idCard: collection.idCard,
-      amount: collection.amount - 1,
-      waiting: collection.waiting,
-    });
-
-  private copyDtoAndIncreaseWaiting = (
-    collection: Collection,
-  ): Observable<UpdateCollectionDto> =>
-    of({
-      idUser: collection.idUser,
-      idCard: collection.idCard,
-      amount: collection.amount,
-      waiting: collection.waiting + 1,
-    });
-
-  private copyDtoAndDecreaseWaiting = (
-    collection: Collection,
-  ): Observable<UpdateCollectionDto> =>
-    of({
-      idUser: collection.idUser,
-      idCard: collection.idCard,
-      amount: collection.amount,
-      waiting: collection.waiting - 1,
-    });
-
+  /**
+   * Create a default Collection DTO from the ids
+   *
+   * @param idUser of the user
+   * @param idCard of the card
+   *
+   * @return Observable<CreateCollectionDto>
+   * @private
+   */
   private createDto(
     idUser: string,
     idCard: string,
@@ -290,6 +322,15 @@ export class CollectionsService {
     });
   }
 
+  /**
+   * Create default Collection DTO with a negative amount from the ids
+   *
+   * @param idUser of the user
+   * @param idCard of the card
+   *
+   * @return Observable<CreateCollectionDto>
+   * @private
+   */
   private createNegativeAmountDto(
     idUser: string,
     idCard: string,
@@ -302,6 +343,15 @@ export class CollectionsService {
     });
   }
 
+  /**
+   * Create default Collection DTO with a negative waiting number from the ids
+   *
+   * @param idUser of the user
+   * @param idCard of the card
+   *
+   * @return Observable<CreateCollectionDto>
+   * @private
+   */
   private createNegativeWaitingDto(
     idUser: string,
     idCard: string,
@@ -314,6 +364,15 @@ export class CollectionsService {
     });
   }
 
+  /**
+   * Create default Collection DTO with a positive amount from the ids
+   *
+   * @param idUser of the user
+   * @param idCard of the card
+   *
+   * @return Observable<CreateCollectionDto>
+   * @private
+   */
   private createWaitingDto(
     idUser: string,
     idCard: string,
@@ -326,6 +385,14 @@ export class CollectionsService {
     });
   }
 
+  /**
+   * Add a collection with the userId and the cardId
+   *
+   * @param idUser of the user
+   * @param idCard of the card
+   *
+   * @private
+   */
   addCardToUser(idUser: string, idCard: string): Observable<CollectionEntity> {
     return this._collectionDao
       .findByUserIdAndCardId(idUser, idCard)
@@ -340,6 +407,14 @@ export class CollectionsService {
       );
   }
 
+  /**
+   * Decrease the collection with idUser and idCard or create a collection with a negative amount
+   *
+   * @param idUser of the user
+   * @param idCard of the card
+   *
+   * @return Observable<CollectionEntity>
+   */
   removeCardToUser(
     idUser: string,
     idCard: string,
@@ -357,6 +432,14 @@ export class CollectionsService {
       );
   }
 
+  /**
+   * Increase the waiting number of the associated collection with idUser and isCard
+   *
+   * @param idUser of the user
+   * @param idCard of the card
+   *
+   * @return Observable<CollectionEntity>
+   */
   addCardWaitingToUser(
     idUser: string,
     idCard: string,
@@ -374,6 +457,14 @@ export class CollectionsService {
       );
   }
 
+  /**
+   * Decrease the waiting number of the associated collection with idUser and isCard
+   *
+   * @param idUser of the user
+   * @param idCard of the card
+   *
+   * @return Observable<CollectionEntity>
+   */
   removeCardWaitingToUser(
     idUser: string,
     idCard: string,

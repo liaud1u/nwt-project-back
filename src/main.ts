@@ -43,8 +43,8 @@ async function bootstrap(config: AppConfig, swaggerConfig: SwaggerConfig) {
   // create swagger document
   const peopleDocument = SwaggerModule.createDocument(app, options, {
     include: [
-      UsersModule,
       AppModule,
+      UsersModule,
       CardsModule,
       CollectionsModule,
       NotificationsModule,

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { defaultIfEmpty, from, Observable, pipe } from 'rxjs';
+import { defaultIfEmpty, from, Observable } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { Collection, CollectionDocument } from '../schemas/collection.schema';
 import { CreateCollectionDto } from '../dto/create-collection.dto';
@@ -20,7 +20,7 @@ export class CollectionsDao {
   ) {}
 
   /**
-   * Call mongoose method, call toJSON on each result and returns CollectionModel[] or undefined
+   * Call mongoose method, call toJSON on each result and returns Collection[] or undefined
    *
    * @return {Observable<Collection[] | void>}
    */
@@ -48,7 +48,7 @@ export class CollectionsDao {
     );
 
   /**
-   * Call mongoose method, call toJSON on each result and returns CollectionModel[] or undefined
+   * Call mongoose method, call toJSON on each result and returns Collection[] or undefined
    *
    * @return {Observable<Collection[] | void>}
    */
@@ -62,7 +62,7 @@ export class CollectionsDao {
     );
 
   /**
-   * Call mongoose method, call toJSON on each result and returns CollectionModel[] or undefined
+   * Call mongoose method, call toJSON on each result and returns Collection[] or undefined
    *
    * @return {Observable<Collection[] | void>}
    */

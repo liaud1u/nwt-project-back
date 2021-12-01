@@ -2,7 +2,6 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
-  Logger,
   Param,
   Put,
   UseInterceptors,
@@ -31,6 +30,7 @@ import { CollectionEntity } from '../collections/entities/collection.entity';
 export class CardsController {
   /**
    * Class constructor
+   *
    * @param _cardsService {CardsService} instance of the service managing cards
    */
   constructor(private readonly _cardsService: CardsService) {}
@@ -81,19 +81,19 @@ export class CardsController {
   }
 
   /**
-   * Handler to answer to GET /cards/level/:id route
+   * Handler to answer to GET /cards/level/:level route
    *
-   * @param {HandlerParams} params list of route params to take card id
+   * @param {HandlerParams} params list of route params to take card level
    *
    * @returns Observable<CardEntity[]>
    */
   @ApiOkResponse({
-    description: 'Returns the card for the given level',
+    description: 'Returns cards for the given level',
     type: CardEntity,
     isArray: true,
   })
   @ApiNotFoundResponse({
-    description: "Card with the given level doesn't exist in the database",
+    description: "Cards with the given level doesn't exist in the database",
   })
   @ApiBadRequestResponse({ description: 'Parameter provided is not good' })
   @ApiUnprocessableEntityResponse({
@@ -108,7 +108,6 @@ export class CardsController {
   })
   @Get('level/:level')
   findByLevel(@Param() params: LevelParams): Observable<CardEntity[] | void> {
-    Logger.log(params);
     return this._cardsService.findByLevel(params.level);
   }
 

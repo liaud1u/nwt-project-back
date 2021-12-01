@@ -22,6 +22,7 @@ import { UserEntity } from '../users/entities/user.entity';
 import { CollectionsService } from '../collections/collections.service';
 import { CollectionEntity } from '../collections/entities/collection.entity';
 import { User } from '../users/schemas/user.schema';
+import { cardConstants } from './constants';
 
 @Injectable()
 export class CardsService {
@@ -30,12 +31,12 @@ export class CardsService {
    *
    * @param _cardsDao {CardsDao} instance of a CardDao
    * @param _usersService {UsersService} instance of the service managing users
-   * @param _collecionService {CollectionsService} instance of the service managing collections
+   * @param _collectionService {CollectionsService} instance of the service managing collections
    */
   constructor(
     private readonly _cardsDao: CardsDao,
     private readonly _usersService: UsersService,
-    private readonly _collecionService: CollectionsService,
+    private readonly _collectionService: CollectionsService,
   ) {}
 
   /**
@@ -55,7 +56,7 @@ export class CardsService {
    *
    * @param {string} id of the card in the db
    *
-   * @return {Observable<Card | void>}
+   * @return {Observable<CardEntity | void>}
    */
   findById = (id: string): Observable<CardEntity | void> =>
     this._cardsDao.findById(id).pipe(
@@ -96,7 +97,7 @@ export class CardsService {
     );
 
   /**
-   * Generate random numbers in array between 1 and 5
+   * Generate random numbers in array between levelMin and levelMax (values in constants.ts)
    *
    * @param num number of generated number
    *
@@ -104,12 +105,17 @@ export class CardsService {
    */
   randomNumbers = (num: number): Observable<number[]> => {
     return of(
-      Array.from({ length: num }, () => Math.floor(Math.random() * 5) + 1),
+      Array.from(
+        { length: num },
+        () =>
+          Math.floor(Math.random() * cardConstants.levelMax) +
+          cardConstants.levelMin,
+      ),
     );
   };
 
   /**
-   * Generate random cards with associated level
+   * Generate a random card with associated level
    *
    * @param level the level of the card
    *
@@ -123,19 +129,19 @@ export class CardsService {
   };
 
   /**
-   * Generate 10 randomCards
+   * Generate X randomCards (where X is nbCardsFreeRoll in constants.ts)
    *
    * @return Observable<CardEntity[]> List of card generated
    */
   generate10RandomCards = (): Observable<CardEntity[]> =>
-    this.randomNumbers(10).pipe(
+    this.randomNumbers(cardConstants.nbCardsFreeRoll).pipe(
       // We pipe on an array of numbers
-      map((_: number[]) => _.map((__: number) => this.randomWithLevel(__))), // randomWithLevel return an Observable of CardEntity
+      map((_: number[]) => _.map((__: number) => this.randomWithLevel(__))), // randomWithLevel return an Observable of CardEntity so we get an Observable<CardEntity>[]
       switchMap((_) => combineLatest(_)), // We assemble the array of observable to make it an Observable of Array
     );
 
   /**
-   * Do a roll of cards for the user
+   * Do a free roll of cards for the user
    *
    * @param userId of the user that doing the roll
    *
@@ -144,16 +150,17 @@ export class CardsService {
   roll(userId: string): Observable<CollectionEntity[]> {
     return this._usersService.findOne(userId).pipe(
       filter((_: UserEntity) => !!_),
-      mergeMap((_: UserEntity) =>
-        !!_ &&
-        (!_.lastRollDate || // If the date is not present then we do the roll
-          (_.lastRollDate &&
-            Date.now().valueOf() - _.lastRollDate > 1)) /*86400000*/
-          ? of(_)
-          : throwError(() => new ImATeapotException()),
+      mergeMap(
+        (_: UserEntity) =>
+          !!_ &&
+          (!_.lastRollDate || // If the date is not present then we do the roll
+            (_.lastRollDate && Date.now().valueOf() - _.lastRollDate > 300000)) // <-- 5 minutes | 86400000 <-- 24 hours*/
+            ? of(_)
+            : throwError(() => new ImATeapotException()), // Just a joke
       ),
-      mergeMap((_: UserEntity) =>
-        this._usersService.changeRollDate(_, Date.now()),
+      mergeMap(
+        (_: UserEntity) =>
+          this._usersService.changeRollDate(_, new Date().setHours(0, 0, 0, 0)), // We update the date of the lastRoll
       ),
       filter((_: User) => !!_),
       mergeMap((_: User) =>
@@ -166,7 +173,7 @@ export class CardsService {
   }
 
   /**
-   * Add the list of cards to the user Account (with collections)
+   * Add the list of cards to the user Account (with creation of collections)
    *
    * @param userId of the user
    * @param cards you want to add
@@ -180,9 +187,9 @@ export class CardsService {
     of(cards).pipe(
       map((__: CardEntity[]) =>
         __.map((___: CardEntity) =>
-          this._collecionService.addCardToUser(userId, ___.id),
+          this._collectionService.addCardToUser(userId, ___.id),
         ),
       ),
-      switchMap((_) => combineLatest(_)),
+      switchMap((_) => combineLatest(_)), // Observable<CollectionEntity>[] to Observable<CollectionEntity[]>
     );
 }

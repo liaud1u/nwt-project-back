@@ -4,7 +4,6 @@ import {
   Controller,
   Delete,
   Get,
-  Logger,
   Param,
   Post,
   Put,
@@ -24,20 +23,16 @@ import {
   ApiUnauthorizedResponse,
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { Observable, of } from 'rxjs';
+import { Observable } from 'rxjs';
 import { CollectionEntity } from './entities/collection.entity';
 import { CollectionsService } from './collections.service';
 import { HttpInterceptor } from '../interceptors/http.interceptor';
-import { UserEntity } from '../users/entities/user.entity';
-import {
-  DoubleHandlerParams,
-  HandlerParams,
-} from '../users/validators/handler-params';
-import { CreateUserDto } from '../users/dto/create-user.dto';
 import { CreateCollectionDto } from './dto/create-collection.dto';
-import { UpdateUserDto } from '../users/dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UpdateCollectionDto } from './dto/update-collection.dto';
+import { UsersParams } from './validators/users-params';
+import { DoubleIdParams } from './validators/double-id-params';
+import { HandlerParams } from './validators/handler-params';
 
 @ApiTags('collections')
 @Controller('collections')
@@ -46,6 +41,7 @@ import { UpdateCollectionDto } from './dto/update-collection.dto';
 export class CollectionsController {
   /**
    * Class constructor
+   *
    * @param _collectionService
    */
   constructor(private readonly _collectionService: CollectionsService) {}
@@ -69,7 +65,7 @@ export class CollectionsController {
   /**
    * Handler to answer to GET /collections/user/:id route
    *
-   * @returns Observable<TradeEntity[] | void>
+   * @returns Observable<CollectionEntity[] | void>
    */
   @ApiOkResponse({
     description: 'Returns the array of Collection for the given "id"',
@@ -83,22 +79,22 @@ export class CollectionsController {
     description: "The request can't be performed in the database",
   })
   @ApiParam({
-    name: 'id',
+    name: 'idUser',
     description: 'Unique identifier of the user in the database',
     type: String,
     allowEmptyValue: false,
   })
-  @Get('/users/:id')
+  @Get('/users/:idUser')
   findAllById(
-    @Param() params: HandlerParams,
+    @Param() params: UsersParams,
   ): Observable<CollectionEntity[] | void> {
-    return this._collectionService.findAllById(params.id);
+    return this._collectionService.findAllById(params.idUser);
   }
 
   /**
    * Handler to answer to GET /collections/user/tradable/:id route
    *
-   * @returns Observable<TradeEntity[] | void>
+   * @returns Observable<CollectionEntity[] | void>
    */
   @ApiOkResponse({
     description:
@@ -113,16 +109,16 @@ export class CollectionsController {
     description: "The request can't be performed in the database",
   })
   @ApiParam({
-    name: 'id',
+    name: 'idUser',
     description: 'Unique identifier of the user in the database',
     type: String,
     allowEmptyValue: false,
   })
-  @Get('/users/tradable/:id')
+  @Get('/users/tradable/:idUser')
   findAllTradableById(
-    @Param() params: HandlerParams,
+    @Param() params: UsersParams,
   ): Observable<CollectionEntity[] | void> {
-    return this._collectionService.findAllTradableById(params.id);
+    return this._collectionService.findAllTradableById(params.idUser);
   }
 
   /**
@@ -146,19 +142,19 @@ export class CollectionsController {
   })
   @ApiParam({
     name: 'idCard',
-    description: 'Unique identifier of the user in the database',
+    description: 'Unique identifier of the card in the database',
     type: String,
     allowEmptyValue: false,
   })
   @ApiParam({
     name: 'idUser',
-    description: 'Unique identifier of the card in the database',
+    description: 'Unique identifier of the user in the database',
     type: String,
     allowEmptyValue: false,
   })
   @Get(':idUser/:idCard')
   findOneByIdUserIdCard(
-    @Param() params: DoubleHandlerParams,
+    @Param() params: DoubleIdParams,
   ): Observable<CollectionEntity[] | void> {
     return this._collectionService.findOneByIdUserIdCard(
       params.idCard,

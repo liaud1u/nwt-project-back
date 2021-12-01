@@ -5,7 +5,7 @@ export class HandlerBody {
   @ApiProperty({
     name: 'username',
     description: 'Unique username',
-    example: 'VictorDu34',
+    example: 'JeanCristhobaldo',
   })
   @IsNotEmpty()
   username: string;
@@ -13,7 +13,7 @@ export class HandlerBody {
   @ApiProperty({
     name: 'password',
     description: 'Password',
-    example: 'HTeu4ud.S+@84/6',
+    example: 'password',
   })
   @IsNotEmpty()
   password: string;
