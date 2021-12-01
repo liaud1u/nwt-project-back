@@ -14,6 +14,5 @@ import { CollectionsDao } from './dao/collections.dao';
   controllers: [CollectionsController],
   exports: [CollectionsService],
   providers: [CollectionsService, CollectionsDao, Logger],
-  exports: [CollectionsService],
 })
 export class CollectionsModule {}

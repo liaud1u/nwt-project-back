@@ -15,7 +15,7 @@ import { CreateTradeDto } from './dto/create-trade.dto';
 import { UpdateUserDto } from '../users/dto/update-user.dto';
 import { PatchTradeDto } from './dto/patch-trade.dto';
 import { Trade } from './schemas/trade.shema';
-import { Collection } from '../collections/schemas/collection.shema';
+
 import { CollectionsDao } from '../collections/dao/collections.dao';
 import { CollectionsService } from '../collections/collections.service';
 import { CollectionEntity } from '../collections/entities/collection.entity';
@@ -117,15 +117,11 @@ export class TradesService {
    * @returns {Observable<TradeEntity>}
    */
   create(tradeDto: CreateTradeDto): Observable<TradeEntity> {
-    console.log('Update waiting amount ');
-
-    console.log(tradeDto);
-
     return this._collectionService
       .addCardWaitingToUser(tradeDto.idUserWaiting, tradeDto.idCard)
       .pipe(
-        map((_) => {
-          this._collectionService.addCardWaitingToUser(
+        mergeMap((_) => {
+          return this._collectionService.addCardWaitingToUser(
             tradeDto.idUser,
             tradeDto.idCardWanted,
           );
@@ -191,19 +187,44 @@ export class TradesService {
 
   accept(id: string) {
     this.findById(id).subscribe((data: TradeEntity) => {
-      this._collectionService.removeCardWaitingToUser(
-        data.idUser,
-        data.idCardWanted,
-      );
-      this._collectionService.removeCardWaitingToUser(
-        data.idUserWaiting,
-        data.idCard,
-      );
-      this._collectionService.addCardToUser(data.idUser, data.idCard);
-      this._collectionService.addCardToUser(
-        data.idUserWaiting,
-        data.idCardWanted,
-      );
+      this._collectionService
+        .removeCardWaitingToUser(data.idUser, data.idCardWanted)
+        .pipe(
+          mergeMap((_) => {
+            return this._collectionService.removeCardWaitingToUser(
+              data.idUserWaiting,
+              data.idCard,
+            );
+          }),
+          mergeMap((_) => {
+            return this._collectionService.addCardToUser(
+              data.idUser,
+              data.idCard,
+            );
+          }),
+          mergeMap((_) => {
+            return this._collectionService.addCardToUser(
+              data.idUserWaiting,
+
+              data.idCardWanted,
+            );
+          }),
+          mergeMap((_) => {
+            return this._collectionService.removeCardToUser(
+              data.idUser,
+              data.idCardWanted,
+            );
+          }),
+          mergeMap((_) => {
+            return this._collectionService.removeCardToUser(
+              data.idUserWaiting,
+              data.idCard,
+            );
+          }),
+        )
+        .subscribe((data) => {
+          this.delete(id).subscribe();
+        });
     });
   }
 

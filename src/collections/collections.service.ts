@@ -278,22 +278,56 @@ export class CollectionsService {
       waiting: collection.waiting - 1,
     });
 
-  private createDto = (
+  private createDto(
     idUser: string,
     idCard: string,
-  ): Observable<CreateCollectionDto> =>
-    of({
+  ): Observable<CreateCollectionDto> {
+    return of({
       idUser: idUser,
       idCard: idCard,
       amount: 1,
       waiting: 0,
     });
+  }
 
-  addCardToUser = (
+  private createNegativeAmountDto(
     idUser: string,
     idCard: string,
-  ): Observable<CollectionEntity> =>
-    this._collectionDao
+  ): Observable<CreateCollectionDto> {
+    return of({
+      idUser: idUser,
+      idCard: idCard,
+      amount: -1,
+      waiting: 0,
+    });
+  }
+
+  private createNegativeWaitingDto(
+    idUser: string,
+    idCard: string,
+  ): Observable<CreateCollectionDto> {
+    return of({
+      idUser: idUser,
+      idCard: idCard,
+      amount: 0,
+      waiting: -1,
+    });
+  }
+
+  private createWaitingDto(
+    idUser: string,
+    idCard: string,
+  ): Observable<CreateCollectionDto> {
+    return of({
+      idUser: idUser,
+      idCard: idCard,
+      amount: 0,
+      waiting: 1,
+    });
+  }
+
+  addCardToUser(idUser: string, idCard: string): Observable<CollectionEntity> {
+    return this._collectionDao
       .findByUserIdAndCardId(idUser, idCard)
       .pipe(
         mergeMap((_: Collection) =>
@@ -304,22 +338,24 @@ export class CollectionsService {
               ),
         ),
       );
+  }
 
-  removeCardToUser = (
+  removeCardToUser(
     idUser: string,
     idCard: string,
-  ): Observable<CollectionEntity> =>
-    this._collectionDao
+  ): Observable<CollectionEntity> {
+    return this._collectionDao
       .findByUserIdAndCardId(idUser, idCard)
       .pipe(
         mergeMap((_: Collection) =>
           !!_
             ? this.decreaseAmount(_)
-            : this.createDto(idUser, idCard).pipe(
+            : this.createNegativeAmountDto(idUser, idCard).pipe(
                 mergeMap((__: CreateCollectionDto) => this.create(__)),
               ),
         ),
       );
+  }
 
   addCardWaitingToUser(
     idUser: string,
@@ -331,26 +367,28 @@ export class CollectionsService {
         mergeMap((_: Collection) =>
           !!_
             ? this.increaseWaiting(_)
-            : this.createDto(idUser, idCard).pipe(
+            : this.createWaitingDto(idUser, idCard).pipe(
                 mergeMap((__: CreateCollectionDto) => this.create(__)),
               ),
         ),
       );
   }
 
-  removeCardWaitingToUser = (
+  removeCardWaitingToUser(
     idUser: string,
     idCard: string,
-  ): Observable<CollectionEntity> =>
-    this._collectionDao
+  ): Observable<CollectionEntity> {
+    return this._collectionDao
       .findByUserIdAndCardId(idUser, idCard)
+
       .pipe(
         mergeMap((_: Collection) =>
           !!_
             ? this.decreaseWaiting(_)
-            : this.createDto(idUser, idCard).pipe(
+            : this.createNegativeWaitingDto(idUser, idCard).pipe(
                 mergeMap((__: CreateCollectionDto) => this.create(__)),
               ),
         ),
       );
+  }
 }
