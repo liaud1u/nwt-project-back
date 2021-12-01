@@ -25,6 +25,13 @@ import { User } from '../users/schemas/user.schema';
 
 @Injectable()
 export class CardsService {
+  /**
+   * Contructor of a Cardservice
+   *
+   * @param _cardsDao {CardsDao} instance of a CardDao
+   * @param _usersService {UsersService} instance of the service managing users
+   * @param _collecionService {CollectionsService} instance of the service managing collections
+   */
   constructor(
     private readonly _cardsDao: CardsDao,
     private readonly _usersService: UsersService,
@@ -117,6 +124,8 @@ export class CardsService {
 
   /**
    * Generate 10 randomCards
+   *
+   * @return Observable<CardEntity[]> List of card generated
    */
   generate10RandomCards = (): Observable<CardEntity[]> =>
     this.randomNumbers(10).pipe(
@@ -130,7 +139,7 @@ export class CardsService {
    *
    * @param userId of the user that doing the roll
    *
-   * @return Observable<CollectionEntity[]>
+   * @return Observable<CollectionEntity[]> return a roll
    */
   roll(userId: string): Observable<CollectionEntity[]> {
     return this._usersService.findOne(userId).pipe(

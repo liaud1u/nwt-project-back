@@ -9,21 +9,26 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
+  /**
+   * Constructor of a AuthService
+   * @param _usersService {UsersService} instance of the service manipulating Users
+   * @param _jwtService {JwtService} instance of the service manipulating Jwt
+   */
   constructor(
-    private usersService: UsersService,
-    private jwtService: JwtService,
+    private _usersService: UsersService,
+    private _jwtService: JwtService,
   ) {}
 
   /**
    * Check if the user exists and if the password matches the one in db
    *
-   * @param username username of the user
-   * @param pass password of the user
+   * @param username {string} username of the user
+   * @param pass {string} password of the user
    *
    * @returns {Observable<UserEntity>}
    */
   validateUser(username: string, pass: string): Observable<UserEntity | void> {
-    return this.usersService
+    return this._usersService
       .findOneByUsername(username)
       .pipe(
         map((_: UserEntity) =>
@@ -35,17 +40,17 @@ export class AuthService {
   /**
    * Login the user and send the token associated to it
    *
-   * @param param to login the user in the database
+   * @param param {HandlerBody} to login the user in the database
    *
    * @returns {Observable<UserEntity>}
    */
   login(param: HandlerBody): Observable<any> {
     const payload = { username: param.username };
-    return this.usersService
+    return this._usersService
       .findOneByUsername(param.username)
       .pipe(
         mergeMap((_: UserEntity) =>
-          this.addTokenAndRemovePassword(_, this.jwtService.sign(payload)),
+          this.addTokenAndRemovePassword(_, this._jwtService.sign(payload)),
         ),
       );
   }
@@ -53,8 +58,8 @@ export class AuthService {
   /**
    * Add the token to the response and remove the password
    *
-   * @param user logged
-   * @param token token we want to add
+   * @param user {UserEntity} logged
+   * @param token {string} token we want to add
    *
    * @returns {Observable<any>}
    */

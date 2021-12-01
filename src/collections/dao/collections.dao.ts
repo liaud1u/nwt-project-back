@@ -80,7 +80,7 @@ export class CollectionsDao {
     );
 
   /**
-   * Call mongoose method, call toJSON on each result and returns CollectionModel or undefined
+   * Call mongoose method, call toJSON on each result and returns a Collection list or undefined
    *
    * @return {Observable<Collection[] | void>}
    */
@@ -100,6 +100,11 @@ export class CollectionsDao {
       defaultIfEmpty(undefined),
     );
 
+  /**
+   * Call mongoose method, call toJSON on each result and returns a Collection or undefined
+   *
+   * @return {Observable<Collection>}
+   */
   findByUserIdAndCardId(
     userId: string,
     cardId: string,
@@ -154,7 +159,7 @@ export class CollectionsDao {
   /**
    * Delete a user in collection list
    *
-   * @param {string} id
+   * @param {string} id of the collection
    *
    * @return {Observable<Collection | void>}
    */

@@ -31,7 +31,7 @@ import { CollectionEntity } from '../collections/entities/collection.entity';
 export class CardsController {
   /**
    * Class constructor
-   * @param _cardsService
+   * @param _cardsService {CardsService} instance of the service managing cards
    */
   constructor(private readonly _cardsService: CardsService) {}
 

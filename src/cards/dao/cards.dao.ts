@@ -18,7 +18,7 @@ export class CardsDao {
   ) {}
 
   /**
-   * Call mongoose method, call toJSON on each result and returns UserModel[] or undefined
+   * Call mongoose method, call toJSON on each result and returns CardModel[] or undefined
    *
    * @return {Observable<Card[] | void>}
    */
