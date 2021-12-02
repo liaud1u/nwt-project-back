@@ -1,5 +1,8 @@
-
-// Insert people array
+/**
+ * This script is to create data inside the collections of the database nwt
+ * You can use it with mongo-shell or a tool like Robo3T
+ */
+// Insert users array
 db.getCollection('users').insertMany([
   {
     password: '$2b$10$RogYBFwjpVQXEq09mF8d2.GZu7fShzqFJTXVRHWKZoLw.q1QNEOsu',
@@ -26,7 +29,7 @@ db.getCollection('users').insertMany([
 // display the final initial data
 db.getCollection('users').find({});
 
-// Insert people array
+// Insert cards array
 db.getCollection('cards').insertMany([
   {
     name: "Place Stanislas",
