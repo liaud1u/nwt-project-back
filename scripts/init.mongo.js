@@ -62,7 +62,7 @@ db.getCollection('cards').insertMany([
     name: "Discord",
     description: "L'endroit pour parler",
     level: 1,
-    image: "https://play-lh.googleusercontent.com/fbrWR4LbtB_1Ulgz3_rw8bY3tx_zPU7A9ZOB5WYG_QmqOUUjA6JEzE_20GA4YBDWMx4",
+    image: "https://upload.wikimedia.org/wikipedia/fr/8/80/Logo_Discord_2015.png",
   },
   {
     name: "NestJS",
