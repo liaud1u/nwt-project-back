@@ -134,7 +134,7 @@ export class CardsService {
    *
    * @return Observable<CardEntity[]> List of card generated
    */
-  generate10RandomCards = (): Observable<CardEntity[]> =>
+  generateRandomCards = (): Observable<CardEntity[]> =>
     this.randomNumbers(cardConstants.nbCardsFreeRoll).pipe(
       // We pipe on an array of numbers
       map((_: number[]) => _.map((__: number) => this.randomWithLevel(__))), // randomWithLevel return an Observable of CardEntity so we get an Observable<CardEntity>[]
@@ -152,12 +152,14 @@ export class CardsService {
     return this._usersService.findOne(userId).pipe(
       filter((_: UserEntity) => !!_),
       mergeMap(
-        (_: UserEntity) =>
-          !!_ &&
-          (!_.lastRollDate || // If the date is not present then we do the roll
-            (_.lastRollDate && Date.now().valueOf() - _.lastRollDate > 300000)) // <-- 5 minutes | 86400000 <-- 24 hours*/
+        (_: UserEntity) => {
+          return !!_ &&
+            (!_.lastRollDate || // If the date is not present then we do the roll
+              (_.lastRollDate &&
+                Date.now().valueOf() - _.lastRollDate > 300000)) // <-- 5 minutes | 86400000 <-- 24 hours*/
             ? of(_)
-            : throwError(() => new ImATeapotException()), // Just a joke
+            : throwError(() => new ImATeapotException());
+        }, // Just a joke
       ),
       mergeMap(
         (_: UserEntity) =>
@@ -165,7 +167,7 @@ export class CardsService {
       ),
       filter((_: User) => !!_),
       mergeMap((_: User) =>
-        this.generate10RandomCards().pipe(
+        this.generateRandomCards().pipe(
           mergeMap((__) => this.addCardToUser(_._id, __)),
           defaultIfEmpty([] as CollectionEntity[]),
         ),

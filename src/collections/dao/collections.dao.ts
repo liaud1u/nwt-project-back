@@ -105,21 +105,19 @@ export class CollectionsDao {
    *
    * @return {Observable<Collection>}
    */
-  findByUserIdAndCardId(
+  findByUserIdAndCardId = (
     userId: string,
     cardId: string,
-  ): Observable<Collection> {
-    return from(
-      this._collectionModel.find({ idCard: cardId, idUser: userId }),
-    ).pipe(
-      map((doc: CollectionDocument[]) =>
-        !!doc && !!doc.length && doc.length === 1 ? doc[0] : null,
-      ),
+  ): Observable<Collection | void> =>
+    from(this._collectionModel.find({ idCard: cardId, idUser: userId })).pipe(
+      map((doc: CollectionDocument[]) => {
+        console.log(doc);
+        return !!doc && !!doc.length && doc.length === 1 ? doc[0] : undefined;
+      }),
       filter((doc: CollectionDocument) => !!doc),
       map((doc: CollectionDocument) => doc.toJSON()),
-      defaultIfEmpty(null),
+      defaultIfEmpty(undefined),
     );
-  }
 
   /**
    * Check if collection already exists with index and add it in collection list

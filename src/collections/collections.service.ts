@@ -395,15 +395,19 @@ export class CollectionsService {
    */
   addCardToUser(idUser: string, idCard: string): Observable<CollectionEntity> {
     return this._collectionDao
-      .findByUserIdAndCardId(idUser, idCard)
+      .findByUserIdAndCardId(
+        String(idUser.toString()),
+        String(idCard.toString()),
+      )
       .pipe(
-        mergeMap((_: Collection) =>
-          !!_
+        mergeMap((_: Collection) => {
+          return !!_
             ? this.increaseAmount(_)
-            : this.createDto(idUser, idCard).pipe(
-                mergeMap((__: CreateCollectionDto) => this.create(__)),
-              ),
-        ),
+            : this.createDto(
+                String(idUser.toString()),
+                String(idCard.toString()),
+              ).pipe(mergeMap((__: CreateCollectionDto) => this.create(__)));
+        }),
       );
   }
 
