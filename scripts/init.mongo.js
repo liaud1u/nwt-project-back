@@ -81,6 +81,28 @@ db.getCollection('cards').insertMany([
 // display the final initial data
 db.getCollection('cards').find({});
 
+// Create an array with cards element
+var cardsData = db
+  .getCollection('cards')
+  .find({})
+  .map(function (element) {
+    return {
+      _id: element._id,
+      name: element.name
+    };
+  });
+
+// Create an array with users element
+var usersData = db
+  .getCollection('users')
+  .find({})
+  .map(function (element) {
+    return {
+      _id: element._id,
+      username: element.username
+    };
+  });
+
 // Insert collections array
 db.getCollection('collections').insertMany([
   {
@@ -100,40 +122,33 @@ db.getCollection('collections').insertMany([
 // display the final initial data
 db.getCollection('collections').find({});
 
+var cpt = 0;
+
+// For each element of the array ...
+usersData.forEach(function (element) {
+      for(i= 0; i<5; i++) {
+        // update the person with the managerId
+        db.getCollection('collections').insert(
+          {
+            amount: 1,
+            idUser: (element._id.toString().split("\"")[1]),
+            idCard: (cardsData[cpt]._id.toString().split("\"")[1]),
+            waiting: 0
+          }
+        );
+        cpt += 1
+        cpt = cpt % 8;
+      }
+});
+
 // Insert notifications array
-db.getCollection('notifications').insertMany([
-  {
-    read: false,
-    accepted: false,
-    type: "notif",
-    idUser: "61a386bb334ac0413ea10011",
-    content: "Bonjour, je suis une notif !",
-    creationTime: new Timestamp()
-  },
-  {
-    read: false,
-    accepted: false,
-    type: "notif",
-    idUser: "61a386bb334ac0413ea10011",
-    content: "Bonjour, je suis une notif 2 !",
-    creationTime: new Timestamp()
-  },
-]);
+db.getCollection('notifications').insertMany([]);
 
 // display the final initial data
 db.getCollection('notifications').find({});
 
 // Insert trade array
-db.getCollection('trades').insertMany([
-  {
-    accepted: false,
-    idUserWaiting: "61a386bb334ac0413ea10011",
-    idUser: "61a386bb334ac0413ea10012",
-    idCardWanted: "61a3c03e334ac0413ea10013",
-    idCard: "61a3c03e334ac0413ea10014",
-    creationTime: new Timestamp()
-  }
-]);
+db.getCollection('trades').insertMany([]);
 
 // display the final initial data
 db.getCollection('trades').find({});
